@@ -14,7 +14,7 @@ const addToCart = TryCatch(async (req, res, next) => {
         message: "Product does not exist.",
       });
     }
-
+console.log("--1")
     // Check if user has an existing cart
     let cart = await Cart.findOne({ userId: req.user.id, activecart: "true" });
 

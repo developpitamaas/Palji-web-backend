@@ -67,13 +67,13 @@ const GetAllProductsForAdmin = Trycatch(async (req, res, next) => {
   category = category ? category : "";
   IsOutOfStock = IsOutOfStock ? IsOutOfStock : "";
 
-  console.log("IsOutOfStock", req.query);
 
   // result per page
   const resultPerPage = perPageData ? perPageData : 10000;
   //   price
   minPrice = minPrice ? minPrice : 1;
   maxPrice = maxPrice ? maxPrice : 1000000000;
+  
   const features = new ApiFeatures(Product.find(), req.query)
     .search()
     .paginate(resultPerPage)
@@ -97,7 +97,79 @@ const GetAllProductsForAdmin = Trycatch(async (req, res, next) => {
     products,
   });
 });
+// const GetAllProducts = Trycatch(async (req, res, next) => {
+//   const perPageData = req.query.perPage;
+//   let { minPrice, maxPrice } = req.query;
+//   let category = req.query.category;
+//   let subcategory = req.query.subcategory;
+//   let IsOutOfStock = req.query.IsOutOfStock;
+//   let productType = req.query.productType;
+//   const nameSearch = req.query.name;
 
+//   category = category ? category : "";
+//   subcategory = subcategory ? subcategory : "";
+//   IsOutOfStock = IsOutOfStock ? IsOutOfStock : "";
+
+//   minPrice = minPrice ? Number(minPrice) : 0;
+//   maxPrice = maxPrice ? Number(maxPrice) : 1000000000;
+
+//   const resultPerPage = perPageData ? perPageData : 50;
+
+//   let features = new ApiFeatures(Product.find(), req.query)
+//     .search();
+
+//   if (subcategory) {
+//     features = features.filterBySubcategory(subcategory);
+//   } else if (category) {
+//     features = features.filterByCategory(category);
+//   }
+
+//   if (productType) {
+//     features = features.filterByProductType(productType);
+//   }
+
+//   const productSizeFilter = await ProductSize.aggregate([
+//     {
+//       $match: {
+//         FinalPrice: { $gte: minPrice, $lte: maxPrice },
+//       },
+//     },
+//     {
+//       $group: {
+//         _id: "$productId",
+//         firstSize: { $first: "$FinalPrice" },
+//       },
+//     },
+//   ]).then(results => results.map(result => result._id));
+
+//   features.query = features.query.where('_id').in(productSizeFilter);
+
+//   // Calculate totalProductsCount correctly
+//   let totalProductsCount = await Product.countDocuments({ _id: { $in: productSizeFilter } });
+
+//   features = features.paginate(resultPerPage);
+
+//   features.query
+//     .select("name price PriceAfterDiscount discountPercentage quantity thumbnail category IsOutOfStock productType description")
+//     .populate("category subcategory");
+
+//   const Allproducts = await features.query;
+
+//   // Get the sizes for each product
+//   const products = await Promise.all(
+//     Allproducts.map(async (product) => {
+//       const size = await ProductSize.find({ productId: product._id });
+//       return { ...product._doc, size };
+//     })
+//   );
+
+//   res.status(200).json({
+//     resultPerPage,
+//     success: true,
+//     totalProducts: totalProductsCount, // This should now be correct
+//     products: products.reverse(),
+//   });
+// });
 const GetAllProducts = Trycatch(async (req, res, next) => {
   const perPageData = req.query.perPage;
   let { minPrice, maxPrice } = req.query;
@@ -146,7 +218,7 @@ const GetAllProducts = Trycatch(async (req, res, next) => {
   features.query = features.query.where('_id').in(productSizeFilter);
 
   // Calculate totalProductsCount correctly
-  let totalProductsCount;
+  // let totalProductsCount;
   let filter = {};
 
   if (nameSearch) {
@@ -175,16 +247,14 @@ const GetAllProducts = Trycatch(async (req, res, next) => {
   }
 
   // Log the filter object
-  console.log("Filter Object: ", filter);
 
   // Get total products count based on the filter
-  if (Object.keys(filter).length > 0) {
-    totalProductsCount = await Product.countDocuments(filter);
-    console.log("Filtered Product Count: ", totalProductsCount);
-  } else {
-    totalProductsCount = await Product.countDocuments();
-    console.log("Total Product Count (No Filter): ", totalProductsCount);
-  }
+  // if (Object.keys(filter).length > 0) {
+  //   totalProductsCount = await Product.countDocuments(filter);
+  // } else {
+  //   totalProductsCount = await Product.countDocuments();
+  // }
+  // let totalProductsCount = await Product.countDocuments({ _id: { $in: productSizeFilter } });
 
   features = features.paginate(resultPerPage);
 
@@ -205,14 +275,12 @@ const GetAllProducts = Trycatch(async (req, res, next) => {
   res.status(200).json({
     resultPerPage,
     success: true,
-    totalProducts: totalProductsCount, // This should now be correct
+    totalProducts: products.length, // This should now be correct
     products: products.reverse(),
   });
 });
 
-
-
-
+ 
 // const GetAllProducts = Trycatch(async (req, res, next) => {
 //   const perPageData = req.query.perPage;
 //   let { minPrice, maxPrice } = req.query;
@@ -416,7 +484,6 @@ const updateProductType = async () => {
       })
     );
 
-    console.log("Products updated successfully:", updatedProducts.length);
   } catch (error) {
     console.error("Error updating products:", error);
   }
