@@ -333,7 +333,7 @@ const ForgotPassword = Trycatch(async (req, res, next) => {
 
   // Send OTP
   try {
-    await Mail(email, "Password Reset OTP", emailContent);
+    await Mail(email, "Password Reset OTP", emailContent, true );
     res.status(200).json({
       success: true,
       message: "OTP sent to your email",

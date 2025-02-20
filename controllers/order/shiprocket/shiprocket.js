@@ -34,7 +34,7 @@ const getAllOrders = async (req, res) => {
 
   try {
     const response = await axios.get(url, { headers });
-
+// default status is  - status
     res.status(200).json({
       success: true,
       message: "Shiprocket orders fetched successfully",
