@@ -1,39 +1,3 @@
-// const nodemailer = require("nodemailer");
-
-// // send mail to user
-// const sendEmail = async (email, subject, message, template) => {
-//   let transporter = nodemailer.createTransport({
-//     service: "gmail",
-//     port: 587,
-//     secure: false,
-//     auth: {
-//       user: process.env.EMAIL,
-//       pass: process.env.PASSWORD,
-//     },
-//   });
-//   var mailOptions = {};
-//   if (template) {
-//     mailOptions = {
-//       from: process.env.EMAIL,
-//       to: email,
-//       subject: subject,
-//       text: message,
-//       html: template || "",
-//     };
-//   } else {
-//     mailOptions = {
-//       from: process.env.EMAIL,
-//       to: email,
-//       subject: subject,
-//       text: message,
-//     };
-//   }
-//   return await transporter.sendMail(mailOptions);
-// };
-
-// //   export
-// module.exports = sendEmail;
-
 
 const nodemailer = require("nodemailer");
 

@@ -318,22 +318,38 @@ const ForgotPassword = Trycatch(async (req, res, next) => {
   const logoUrl =
     "https://paliji-admin.vercel.app/static/media/logo.749613bd9100ee0b9f00.png";
   const shopName = "Palji Bakery";
+  // const emailContent = `
+  //   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; text-align: center;">
+  //     <img src="${logoUrl}" alt="${shopName} Logo" style="width: 150px; height: auto; margin-bottom: 20px;">
+  //     <h2 style="color: #333;">Welcome to ${shopName}!</h2>
+  //     <p style="font-size: 16px; color: #555;">Your OTP is: <strong style="font-size: 24px; color: #28a745;">${OTP}</strong>.</p>
+  //     <p style="font-size: 16px; color: #555;">Please do not share this OTP with anyone.</p>
+  //     <p style="font-size: 14px; color: #999;">This OTP is valid for a short period. Please use it promptly.</p>
+  //     <footer style="margin-top: 20px; font-size: 12px; color: #999;">
+  //       <p>Thank you for choosing ${shopName}!</p>
+  //     </footer>
+  //   </div>
+  // `;
   const emailContent = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; text-align: center;">
-      <img src="${logoUrl}" alt="${shopName} Logo" style="width: 150px; height: auto; margin-bottom: 20px;">
-      <h2 style="color: #333;">Welcome to ${shopName}!</h2>
-      <p style="font-size: 16px; color: #555;">Your OTP is: <strong style="font-size: 24px; color: #28a745;">${OTP}</strong>.</p>
-      <p style="font-size: 16px; color: #555;">Please do not share this OTP with anyone.</p>
-      <p style="font-size: 14px; color: #999;">This OTP is valid for a short period. Please use it promptly.</p>
-      <footer style="margin-top: 20px; font-size: 12px; color: #999;">
-        <p>Thank you for choosing ${shopName}!</p>
-      </footer>
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; text-align: center;">
+    <img src="${logoUrl}" alt="${shopName} Logo" style="width: 150px; height: auto; margin-bottom: 20px;">
+    <h2 style="color: #333;">Welcome to ${shopName}!</h2>
+    <p style="font-size: 16px; color: #555;">We received a request to reset your password. To proceed, please enter the following OTP in the website form:</p>
+    <div style="background-color: #f7f7f7; padding: 15px; border-radius: 5px; margin-top: 20px;">
+      <h3 style="color: #333; font-size: 32px; font-weight: bold;">${OTP}</h3>
     </div>
-  `;
+    <p style="font-size: 16px; color: #555; margin-top: 20px;">Please enter this OTP in the website to proceed with resetting your password.</p>
+    <p style="font-size: 14px; color: #999;">This OTP is valid for a short period. Please use it promptly.</p>
+    <footer style="margin-top: 20px; font-size: 12px; color: #999;">
+      <p>Thank you for choosing ${shopName}!</p>
+    </footer>
+  </div>
+`;
+
 
   // Send OTP
   try {
-    await Mail(email, "Password Reset OTP", emailContent, true );
+    await Mail(email, "Password Reset OTP", emailContent, true);
     res.status(200).json({
       success: true,
       message: "OTP sent to your email",

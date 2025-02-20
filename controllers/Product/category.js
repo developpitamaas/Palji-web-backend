@@ -149,7 +149,8 @@ const DeleteSubCategory = Trycatch(async (req, res, next) => {
 
 // get all products by category
 const GetAllProductsByCategory = Trycatch(async (req, res, next) => {
-  const products = await Product.find({ category: req.params.id });
+  const products = await Product.find({ category: req.params.id })
+    
   const totalProducts = products.length;
   res.status(200).json({
     success: true,
