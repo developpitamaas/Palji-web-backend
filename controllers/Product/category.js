@@ -2,6 +2,7 @@ const Category = require("../../model/Product/Categories");
 const Subcategory = require("../../model/Product/subcategories");
 const Trycatch = require("../../middleware/Trycatch");
 const Product = require("../../model/Product/product");
+const productsize = require("../../model/Product/productsize");
 
 // create product category
 const CreateCategory = Trycatch(async (req, res, next) => {
@@ -148,16 +149,39 @@ const DeleteSubCategory = Trycatch(async (req, res, next) => {
 });
 
 // get all products by category
-const GetAllProductsByCategory = Trycatch(async (req, res, next) => {
-  const products = await Product.find({ category: req.params.id })
+// const GetAllProductsByCategory = Trycatch(async (req, res, next) => {
+//   const products = await Product.find({ category: req.params.id })
     
+//   const totalProducts = products.length;
+//   res.status(200).json({
+//     success: true,
+//     totalProducts,
+//     products,
+//   });
+// });
+const GetAllProductsByCategory = Trycatch(async (req, res, next) => {
+  // Fetch products based on category ID
+  const products = await Product.find({ category: req.params.id });
+
+  // For each product, fetch its sizes and return the product along with size data
+  const productsWithSize = await Promise.all(
+    products.map(async (product) => {
+      // Find sizes for the current product
+      const size = await productsize.find({ productId: product._id });
+      return { ...product._doc, size }; // Return product with size data
+    })
+  );
+
   const totalProducts = products.length;
+
+  // Send the response with the total count and products with size info
   res.status(200).json({
     success: true,
     totalProducts,
-    products,
+    products: productsWithSize,
   });
 });
+
 
 // exports
 module.exports = {
