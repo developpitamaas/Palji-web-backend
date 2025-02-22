@@ -9,7 +9,7 @@ const createShiprocketOrder = async (orderData) => {
   };
   try {
     console.log(
-      "Sending payload to Shiprocket:", 
+      "Sending payload to Shiprocket:",
       JSON.stringify(orderData, null, 2)
     );
     const response = await axios.post(url, orderData, { headers });
@@ -25,7 +25,37 @@ const createShiprocketOrder = async (orderData) => {
 
 // get all orders
 
+// const getAllOrders = async (req, res) => {
+//   const url = "https://apiv2.shiprocket.in/v1/external/orders";
+//   const headers = {
+//     "Content-Type": "application/json",
+//     Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+//   };
+
+//   try {
+//     const response = await axios.get(url, { headers });
+// // default status is  - status
+//     res.status(200).json({
+//       success: true,
+//       message: "Shiprocket orders fetched successfully",
+//       data: response.data,
+//     });
+//   } catch (error) {
+//     const errorMessage = error.response
+//       ? JSON.stringify(error.response.data)
+//       : error.message;
+//     console.error("Error while fetching Shiprocket orders:", errorMessage);
+//     res.status(500).json({
+//       success: false,
+//       message: "Error while fetching Shiprocket orders",
+//       error: errorMessage,
+//     });
+//   }
+// };
+
 const getAllOrders = async (req, res) => {
+
+  const status = req.query.status;
   const url = "https://apiv2.shiprocket.in/v1/external/orders";
   const headers = {
     "Content-Type": "application/json",
@@ -34,11 +64,13 @@ const getAllOrders = async (req, res) => {
 
   try {
     const response = await axios.get(url, { headers });
-// default status is  - status
+    const newOrders = response.data.data.filter(
+      (order) => order.status === status
+    );
     res.status(200).json({
       success: true,
-      message: "Shiprocket orders fetched successfully",
-      data: response.data,
+      message: "Shiprocket new orders fetched successfully",
+      data: newOrders,
     });
   } catch (error) {
     const errorMessage = error.response
@@ -52,6 +84,45 @@ const getAllOrders = async (req, res) => {
     });
   }
 };
+
+// const getAllOrders = async (req, res) => {
+//   const status = req.query.status; // Get status from query params
+//   const url = "https://apiv2.shiprocket.in/v1/external/orders";
+//   const headers = {
+//     "Content-Type": "application/json",
+//     Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+//   };
+
+//   try {
+//     const response = await axios.get(url, { headers });
+
+//     let filteredOrders = response.data.data;
+
+//     if (status) {
+//       filteredOrders = filteredOrders.filter(
+//         (order) => order.status.toUpperCase() === status.toUpperCase()
+//       );
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       message: `Shiprocket orders with status ${status || "ALL"} fetched successfully`,
+//       data: filteredOrders,
+//     });
+//   } catch (error) {
+//     const errorMessage = error.response
+//       ? JSON.stringify(error.response.data)
+//       : error.message;
+//     console.error("Error while fetching Shiprocket orders:", errorMessage);
+//     res.status(500).json({
+//       success: false,
+//       message: "Error while fetching Shiprocket orders",
+//       error: errorMessage,
+//     });
+//   }
+// };
+
+
 
 const getOrderById = async (req, res) => {
   const orderId = req.params.id;
@@ -108,5 +179,9 @@ const cancelOrderById = async (req, res) => {
   }
 };
 
-module.exports = { createShiprocketOrder, getAllOrders, getOrderById, cancelOrderById };
- 
+module.exports = {
+  createShiprocketOrder,
+  getAllOrders,
+  getOrderById,
+  cancelOrderById,
+};
