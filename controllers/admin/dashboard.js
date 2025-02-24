@@ -2,33 +2,92 @@ const User = require("../../model/User/users");
 const TryCatch = require("../../middleware/Trycatch");
 const Products = require("../../model/Product/product");
 const SecondorderSchema = require("../../model/order/orders");
+const axios = require("axios");
 
-// get dashboard
+// get dashboard 
+// const GetDashboard = TryCatch(async (req, res, next) => {
+//   const totalUsers = await User.countDocuments();
+//   const totalProducts = await Products.countDocuments();
+//   // count out of stock products
+//   const totalOrders = await SecondorderSchema.countDocuments();
+//   // countDocuments total panding orders
+//   const totalPandingOrders = await SecondorderSchema.countDocuments({
+//     status: "Pending",
+//   });
+//   // countDocuments total shipped orders
+//   const totalShippedOrders = await SecondorderSchema.countDocuments({
+//     status: "Shipped",
+//   });
+//   // // countDocuments total delivered orders
+//   const totalDeliveredOrders = await SecondorderSchema.countDocuments({
+//     status: "Delivered",
+//   });
+//   // // countDocuments total canceled orders
+//   const totalCanceledOrders = await SecondorderSchema.countDocuments({
+//     status: "Cancelled",
+//   });
+//   // // countDocuments total returned orders
+//   const totalReturnedOrders = await SecondorderSchema.countDocuments({
+//     status: "returned",
+//   });
+
+//   res.status(200).json({
+//     success: true,
+//     totalUsers,
+//     totalProducts,
+//     totalOrders,
+//     totalPandingOrders,
+//     totalShippedOrders,
+//     totalDeliveredOrders,
+//     totalCanceledOrders,
+//     totalReturnedOrders,
+//   });
+// });     
 const GetDashboard = TryCatch(async (req, res, next) => {
+  // Fetch data from your database
   const totalUsers = await User.countDocuments();
   const totalProducts = await Products.countDocuments();
-  // count out of stock products
   const totalOrders = await SecondorderSchema.countDocuments();
-  // countDocuments total panding orders
   const totalPandingOrders = await SecondorderSchema.countDocuments({
     status: "Pending",
   });
-  // countDocuments total shipped orders
   const totalShippedOrders = await SecondorderSchema.countDocuments({
     status: "Shipped",
   });
-  // // countDocuments total delivered orders
   const totalDeliveredOrders = await SecondorderSchema.countDocuments({
     status: "Delivered",
   });
-  // // countDocuments total canceled orders
   const totalCanceledOrders = await SecondorderSchema.countDocuments({
     status: "Cancelled",
   });
-  // // countDocuments total returned orders
   const totalReturnedOrders = await SecondorderSchema.countDocuments({
     status: "returned",
   });
+
+  // Fetch data from Shiprocket API
+  const shiprocketUrl = "https://apiv2.shiprocket.in/v1/external/orders";
+  const shiprocketHeaders = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+  };
+
+  let shiprocketNewOrders = 0;
+  let shiprocketCanceledOrders = 0; 
+  let shiprocketDeliveredOrders = 0;
+  let shiprocketShippedOrders = 0;
+
+  try {
+    const response = await axios.get(shiprocketUrl, { headers: shiprocketHeaders });
+    const orders = response.data.data;
+
+    // Calculate counts based on Shiprocket order status
+    shiprocketNewOrders = orders.filter((order) => order.status === "NEW").length;
+    shiprocketCanceledOrders = orders.filter((order) => order.status === "CANCELED").length;
+    shiprocketDeliveredOrders = orders.filter((order) => order.status === "DELIVERED").length;
+    shiprocketShippedOrders = orders.filter((order) => order.status === "shipped").length;
+  } catch (error) {
+    console.error("Error fetching Shiprocket orders:", error.message);
+  }
 
   res.status(200).json({
     success: true,
@@ -40,9 +99,14 @@ const GetDashboard = TryCatch(async (req, res, next) => {
     totalDeliveredOrders,
     totalCanceledOrders,
     totalReturnedOrders,
+    shiprocketNewOrders,
+    shiprocketCanceledOrders,
+    shiprocketDeliveredOrders,
+    shiprocketShippedOrders,
   });
 });
 
+module.exports = GetDashboard;
 const RevenuInfo = async (req, res) => {
   try {
     // Fetch all orders and populate necessary fields
