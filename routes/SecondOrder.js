@@ -26,6 +26,7 @@ SecondOrder.route("/shiprocket/get-all-orders").get( ShiprocketData.getAllOrders
 SecondOrder.route("/shiprocket/get-order-by-id/:id").get(ShiprocketData.getOrderById);
 SecondOrder.route("/shiprocket/cancel-order-by-id/:id").post(ShiprocketData.cancelOrderById);
 SecondOrder.route("/shiprocket/get-orders-by-user-id").get(Auth.IsAuthenticateUser,ShiprocketData.getOrdersByUserId);
+SecondOrder.route("/shiprocket/create-shipment/:id").post(ShiprocketData.createShipment);
 
 
 
