@@ -258,9 +258,9 @@ const GetAllProducts = Trycatch(async (req, res, next) => {
 
   features = features.paginate(resultPerPage);
 
-  features.query
-    .select("name price PriceAfterDiscount discountPercentage quantity thumbnail category IsOutOfStock productType description")
-    .populate("category subcategory");
+    features.query
+      .select("name price PriceAfterDiscount discountPercentage quantity thumbnail category IsOutOfStock productType description")
+      .populate("category subcategory");
 
   const Allproducts = await features.query;
 

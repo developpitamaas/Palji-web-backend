@@ -85,42 +85,6 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-// const getAllOrders = async (req, res) => {
-//   const status = req.query.status; // Get status from query params
-//   const url = "https://apiv2.shiprocket.in/v1/external/orders";
-//   const headers = {
-//     "Content-Type": "application/json",
-//     Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
-//   };
-
-//   try {
-//     const response = await axios.get(url, { headers });
-
-//     let filteredOrders = response.data.data;
-
-//     if (status) {
-//       filteredOrders = filteredOrders.filter(
-//         (order) => order.status.toUpperCase() === status.toUpperCase()
-//       );
-//     }
-
-//     res.status(200).json({
-//       success: true,
-//       message: `Shiprocket orders with status ${status || "ALL"} fetched successfully`,
-//       data: filteredOrders,
-//     });
-//   } catch (error) {
-//     const errorMessage = error.response
-//       ? JSON.stringify(error.response.data)
-//       : error.message;
-//     console.error("Error while fetching Shiprocket orders:", errorMessage);
-//     res.status(500).json({
-//       success: false,
-//       message: "Error while fetching Shiprocket orders",
-//       error: errorMessage,
-//     });
-//   }
-// };
 
 
 
@@ -179,9 +143,40 @@ const cancelOrderById = async (req, res) => {
   }
 };
 
+const getOrdersByUserId = async (req, res) => {
+  const userId = req.user.id; // Assuming userId is extracted from authenticated request
+  const url = "https://apiv2.shiprocket.in/v1/external/orders";
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+  };
+  try {
+    const response = await axios.get(url, { headers });
+    // console.log(response.data.data.others.client_id);
+    const userOrders = response.data.data.filter(
+      // (order) => { console.log(order.others.client_id, "---", userId , order.others.client_id == userId),  order.others.client_id == userId}
+      (order) => order.others.client_id == userId
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Orders for the logged-in user fetched successfully",
+      data: userOrders,
+    });
+  } catch (error) {
+    console.error("Error while fetching user orders:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error while fetching user orders",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createShiprocketOrder,
   getAllOrders,
   getOrderById,
   cancelOrderById,
+  getOrdersByUserId
 };
