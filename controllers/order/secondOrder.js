@@ -196,46 +196,46 @@ await secondorder.save();
   const updatedProducts = [];
   const lowQuantityProducts = [];
   const outOfStockProducts = [];
-  for (const item of cart.orderItems) {
-    const product = item.productId;
-    const size = item.size;
+  // for (const item of cart.orderItems) {
+  //   const product = item.productId;
+  //   const size = item.size;
 
-    const Orderproductsize = await Productsize.findById(size);
+  //   const Orderproductsize = await Productsize.findById(size);
 
-    const updatedQuantity = Orderproductsize.quantity - item.quantity;
-    const isOutOfStock = updatedQuantity <= 0 ? "true" : "false";
+  //   const updatedQuantity = Orderproductsize.quantity - item.quantity;
+  //   const isOutOfStock = updatedQuantity <= 0 ? "true" : "false";
 
-    const updatedProduct = await Productsize.findByIdAndUpdate(
-      size,
-      { quantity: updatedQuantity, IsOutOfStock: isOutOfStock },
-      { new: true }
-    );
-    if (updatedQuantity < 20 && updatedQuantity > 1) {
-      lowQuantityProducts.push(updatedProduct);
-    }
+  //   const updatedProduct = await Productsize.findByIdAndUpdate(
+  //     size,
+  //     { quantity: updatedQuantity, IsOutOfStock: isOutOfStock },
+  //     { new: true }
+  //   );
+  //   if (updatedQuantity < 20 && updatedQuantity > 1) {
+  //     lowQuantityProducts.push(updatedProduct);
+  //   }
 
-    if (updatedQuantity <= 0) {
-      outOfStockProducts.push(updatedProduct);
-    }
-    updatedProducts.push(updatedProduct);
-  }
+  //   if (updatedQuantity <= 0) {
+  //     outOfStockProducts.push(updatedProduct);
+  //   }
+  //   updatedProducts.push(updatedProduct);
+  // }
 
   // Send mail for low quantity products
-  if (lowQuantityProducts.length > 0) {
-    let lowQuantityMessage =
-      "<p>Some products are running low on quantity. Please check your inventory:</p><ul>";
-    lowQuantityProducts.forEach((product) => {
-      lowQuantityMessage += `<li>${product.name} : <br/> quantity : ${Orderproductsize.quantity} </li> <img loading="lazy" src="${product.thumbnail}" alt="${product.name}" style="max-width: 100px;">`;
-    });
-    lowQuantityMessage += "</ul>";
+  // if (lowQuantityProducts.length > 0) {
+  //   let lowQuantityMessage =
+  //     "<p>Some products are running low on quantity. Please check your inventory:</p><ul>";
+  //   lowQuantityProducts.forEach((product) => {
+  //     lowQuantityMessage += `<li>${product.name} : <br/> quantity : ${Orderproductsize?.quantity} </li> <img loading="lazy" src="${product.thumbnail}" alt="${product.name}" style="max-width: 100px;">`;
+  //   });
+  //   lowQuantityMessage += "</ul>";
 
-    Mail(
-      "vaibhavrathorema@gmail.com",
-      "Low Product Quantity Alert",
-      lowQuantityMessage,
-      true
-    );
-  }
+  //   Mail(
+  //     "vaibhavrathorema@gmail.com",
+  //     "Low Product Quantity Alert",
+  //     lowQuantityMessage,
+  //     true
+  //   );
+  // }
 
   // Send mail for out of stock products
   // if (outOfStockProducts.length > 0) {
