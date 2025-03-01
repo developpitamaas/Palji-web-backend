@@ -195,8 +195,130 @@ const getOrdersByUserId = async (req, res) => {
 
 
 // Create Shipment for an order
+// const createShipment = async (req, res) => {
+//   const orderId = req.params.id;
+
+//   if (!orderId) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Order ID is missing",
+//     });
+//   }
+
+//   const orderDetailsUrl = `https://apiv2.shiprocket.in/v1/external/orders/show/${orderId}`;
+//   const headers = {
+//     "Content-Type": "application/json",
+//     Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+//   };
+
+//   try {
+//     // Step 1: Fetch Order Details
+//     const orderResponse = await axios.get(orderDetailsUrl, { headers });
+//     const orderData = orderResponse.data.data;
+
+//     // Step 2: Assign AWB to the Shipment
+//     const awbAssignUrl = "https://apiv2.shiprocket.in/v1/external/courier/assign/awb";
+//     const awbPayload = {
+//       shipment_id: orderData.shipments.id, // Use the shipment ID from the order data
+//       courier_id: 58, // Replace with the desired courier ID (optional)
+//     }; 
+
+//     const awbResponse = await axios.post(awbAssignUrl, awbPayload, { headers });
+//     console.log("AWB Assign Response:", awbResponse.data);
+//     console.log("--------2",awbResponse.data.response.data.shipment_id);
+
+//     // Check if AWB assignment was successful
+//     if (awbResponse.data.awb_assign_status === 0) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Failed to assign AWB",
+//         error: awbResponse.data.response.data.awb_assign_error || "Insufficient funds or other error",
+//       });
+//     }
+
+//     const shipmentId = awbResponse.data.response.data.shipment_id; // Extract shipment ID from the response
+// console.log("--------3-------",shipmentId);
+//     // Step 3: Generate Pickup Request
+//     const pickupUrl = "https://apiv2.shiprocket.in/v1/external/courier/generate/pickup";
+//     const pickupPayload = {
+//       shipment_id: shipmentId, // Use the shipment ID from the AWB assign response
+//     };
+
+//     const pickupResponse = await axios.post(pickupUrl, pickupPayload, { headers });
+//     console.log("Pickup Response:", pickupResponse.data);
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Shipment created and pickup requested successfully",
+//       data: {
+//         awbAssignResponse: awbResponse.data,
+//         pickupResponse: pickupResponse.data,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error while creating shipment:", error.response?.data || error.message);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Error while creating shipment",
+//       error: error.response?.data || error.message,
+//     });
+//   }
+// };
+
+const checkServiceability = async (req, res) => {
+  // Extract parameters from the query string
+  const { pickup_postcode, delivery_postcode, weight, cod, order_id } = req.query; 
+  console.log(req.query);
+
+  // Validation to check if required parameters are missing
+  if (!pickup_postcode || !delivery_postcode || !weight) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing required parameters: pickup_postcode, delivery_postcode, or weight",
+    });
+  }
+
+  const serviceabilityUrl = "https://apiv2.shiprocket.in/v1/external/courier/serviceability";
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+  };
+
+  // Parameters to be sent to ShipRocket API
+  const payload = {
+    pickup_postcode,
+    delivery_postcode,
+    weight,
+    cod: cod || "0", // Default to "0" if cod is not provided
+    order_id: order_id || "", // Optional order ID
+  };
+
+  try {
+    // Sending a GET request to ShipRocket API with query params
+    const response = await axios.get(serviceabilityUrl, {
+      headers,
+      params: payload, // This will send data as query parameters
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Serviceability check successful",
+      data: response.data,
+    });
+  } catch (error) {
+    console.error("Error checking serviceability:", error.response?.data || error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Error checking serviceability",
+      error: error.response?.data || error.message,
+    });
+  }
+};
+
+
 const createShipment = async (req, res) => {
   const orderId = req.params.id;
+  const courierId = req.params.courierId;
 
   if (!orderId) {
     return res.status(400).json({
@@ -212,83 +334,59 @@ const createShipment = async (req, res) => {
   };
 
   try {
+    // Step 1: Fetch Order Details
     const orderResponse = await axios.get(orderDetailsUrl, { headers });
     const orderData = orderResponse.data.data;
-    console.log("Order Data:", orderData);
 
-    // Validate required fields
-    if (
-      !orderData.customer_address ||
-      !orderData.billing_address ||
-      !Array.isArray(orderData.products) ||
-      !orderData.pickup_address
-    ) {
+    // Step 2: Assign AWB to the Shipment
+    const awbAssignUrl = "https://apiv2.shiprocket.in/v1/external/courier/assign/awb";
+    const awbPayload = {
+      shipment_id: orderData.shipments.id, // Use the shipment ID from the order data
+      courier_id: 58, // Replace with the desired courier ID (optional)
+    };
+
+    const awbResponse = await axios.post(awbAssignUrl, awbPayload, { headers });
+    console.log("AWB Assign Response:", awbResponse.data);
+    console.log("--------2", awbResponse.data.response.data.shipment_id);
+
+    // Check if AWB assignment was successful
+    if (awbResponse.data.awb_assign_status === 0) {
       return res.status(400).json({
         success: false,
-        message: "Invalid or missing order data",
+        message: "Failed to assign AWB",
+        error: awbResponse.data.response.data.awb_assign_error || "Insufficient funds or other error",
       });
     }
 
-    // Map orderData to shipmentPayload
-    const shipmentPayload = {
-      order_id: orderId,
-      shipping_address: {
-        name: orderData.customer_name,
-        address: orderData.customer_address,
-        city: orderData.customer_city,
-        state: orderData.customer_state,
-        country: orderData.customer_country,
-        pin_code: orderData.customer_pincode,
-        phone: orderData.customer_phone,
-      },
-      billing_address: {
-        name: orderData.billing_name,
-        address: orderData.billing_address,
-        city: orderData.billing_city,
-        state: orderData.billing_state,
-        country: orderData.billing_country,
-        pin_code: orderData.billing_pincode,
-        phone: orderData.billing_phone,
-      },
-      order_items: orderData.products.map((product) => ({
-        name: product.name,
-        sku: product.sku,
-        units: product.quantity,
-        selling_price: product.selling_price,
-      })),
-      pickup_location: {
-        name: orderData.pickup_address.name,
-        address: orderData.pickup_address.address,
-        city: orderData.pickup_address.city,
-        state: orderData.pickup_address.state,
-        country: orderData.pickup_address.country,
-        pin_code: orderData.pickup_address.pin_code,
-        phone: orderData.pickup_address.phone,
-      },
-      payment_method: "prepaid",
-      shipment_type: "standard",
+    const shipmentId = awbResponse.data.response.data.shipment_id; // Extract shipment ID from the response
+    console.log("--------3-------", shipmentId);
+
+    // Step 3: Generate Pickup Request
+    const pickupUrl = "https://apiv2.shiprocket.in/v1/external/courier/generate/pickup";
+    const pickupPayload = {
+      shipment_id: shipmentId, // Use the shipment ID from the AWB assign response
     };
 
-    console.log("Shipment Payload:", shipmentPayload);
-
-    const shipmentUrl = "https://apiv2.shiprocket.in/v1/external/courier/generate/pickup";
-    const response = await axios.post(shipmentUrl, shipmentPayload, { headers });
+    const pickupResponse = await axios.post(pickupUrl, pickupPayload, { headers });
+    console.log("Pickup Response:", pickupResponse.data);
 
     return res.status(200).json({
       success: true,
-      message: "Order shipped successfully",
-      data: response.data,
+      message: "Shipment created and pickup requested successfully",
+      data: {
+        awbAssignResponse: awbResponse.data,
+        pickupResponse: pickupResponse.data,
+      },
     });
   } catch (error) {
-    console.error("Error while shipping order:", error.response?.data || error.message);
+    console.error("Error while creating shipment:", error.response?.data || error.message);
     return res.status(500).json({
       success: false,
-      message: "Error while shipping order",
+      message: "Error while creating shipment",
       error: error.response?.data || error.message,
     });
   }
 };
-
 
 module.exports = {
   createShiprocketOrder,
@@ -296,5 +394,6 @@ module.exports = {
   getOrderById,
   cancelOrderById,
   getOrdersByUserId,
-  createShipment
+  createShipment,
+  checkServiceability
 };
