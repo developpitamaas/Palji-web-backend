@@ -11,7 +11,7 @@ const RazorpayData = require("../order/razorpay/razorpayController");
 const User = require("../../model/User/users");
 const Trycatch = require("../../middleware/Trycatch");
 
-// get user all details by id 
+// get user all details by id
 const getUserDetailsById = Trycatch(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   const data = await SecondorderSchema.find({ userId: req.params.id })
@@ -43,417 +43,11 @@ const getUserDetailsById = Trycatch(async (req, res, next) => {
     secondorders,
     user,
   });
-
-  
 });
-
-// const CreateSecondOrder = TryCatch(async (req, res, next) => {
-//   const userId = req.user.id;
-//   const {
-//     CartId,
-//     paymentMethod,
-//     paymentId,
-//     paymentorderCratedAt,
-//     currency,
-//     paymentDoneAt,
-//     DeviceType,
-//   } = req.body;
-
-//   // Create the second order
-//   const secondorder = await SecondorderSchema.create({
-//     ...req.body,
-//     userId,
-//     CartId: CartId,
-//     // payment details
-//     isPaid: paymentMethod === "Razorpay",
-//     paymentId: paymentId || null,
-//     paymentorderCratedAt: paymentorderCratedAt,
-//     currency: currency,
-//     paymentDoneAt,
-//     DeviceType,
-//   });
-
-//   const userAddress = await ShipAddress.findById(secondorder.shippingAddress);
-//   // Extract order items from the cart
-//   const cart = await Cart.findById(CartId).populate("orderItems.productId")
-//   .populate("orderItems.size")  
-//   .populate("orderItems.productId.category");
-//   if (!cart) {
-//     return res.status(404).json({ success: false, message: "Cart not found" });
-//   }
-
-//   // Clear the complete cart
-//   await Cart.findByIdAndUpdate(CartId, { activecart: "false" });
-
-//   // Send mail
-//   const userEmail = req.user.email;
-//   const orderDetails = generateOrderDetails(cart, secondorder, userAddress);
-//   const orderTotal = calculateOrderTotal(cart);
-
-//   Mail(
-//     req.user.email,
-//     "Order Placed Successfully",
-//     `${orderDetails}`,
-//     (isHTML = true)
-//   );
-//   const calculateTotalDimensions = (orderItems) => {
-//     let totalHeight = 0;
-//     let totalWidth = 0;
-//     let totalLength = 0;
-
-//     orderItems.forEach(item => {
-//       const size = item.size;
-
-//       const itemHeight = parseFloat(size.height) || 0;
-//       const itemWidth = parseFloat(size.width) || 0;
-//       const itemLength = parseFloat(size.length) || 0;
-
-//       totalHeight += itemHeight * item.quantity;
-//       totalWidth += itemWidth * item.quantity;
-//       totalLength += itemLength * item.quantity;
-//     });
-
-//     return {
-//       totalHeight,
-//       totalWidth,
-//       totalLength
-//     };
-//   };
-//   const { totalHeight, totalWidth, totalLength } = calculateTotalDimensions(cart.orderItems);
-
-// // for shiprocket
-// const shiprocketPayload = {
-//   order_id: secondorder._id.toString(),
-//   order_date: new Date().toISOString(),
-//   pickup_location: "Primary",
-//   channel_id: "4903096",
-//   billing_customer_name: req.user.firstName,
-//   billing_last_name: req.user.lastName,
-//   client_id: req.user._id.toString(),
-//   user_id: req.user._id.toString(),
-//   billing_email: req.user.email,
-//   billing_address: userAddress.address,
-//   billing_city: userAddress.city,
-//   billing_pincode: userAddress.pincode,
-//   billing_state: userAddress.state,
-//   billing_country: userAddress.country,
-//   billing_phone: userAddress.phonenumber,
-//   shipping_is_billing: true,
-//   shipping_customer_name: req.user.firstName,
-//   shipping_last_name: req.user.lastName,
-//   shipping_address: userAddress.address,
-//   shipping_city: userAddress.city, 
-//   shipping_pincode: userAddress.pincode,
-//   shipping_state: userAddress.state,
-//   shipping_country: userAddress.country,
-//   transaction_id: secondorder.paymentId,
-//   shipping_phone: userAddress.phonenumber,
-//   order_items: cart.orderItems.map((item, index) => ({
-//     sku: `SKU_${item.productId._id}_${index}`, 
-//     name: item.productId.name,
-//     category: item.productId.category.toString(), 
-//     units: item.quantity, 
-//     selling_price: item.singleProductPrice,
-//     discount: 0, 
-//     tax: 0,
-//     product_id: item.productId._id.toString(),
-//     product_image: item.productId.thumbnail,
-//     size:item.size.toString(),
-//     height: item.size.height,
-//     width: item.size.width,
-//     length: item.size.length
-//   })),
-//   payment_method: paymentMethod === "Razorpay" ? "Prepaid" : "COD",
-//   sub_total: cart.totalPrice,
-//   shipping_charges: 0,
-//   length: totalLength,  
-//   breadth: totalWidth,  
-//   height: totalHeight,  
-//   weight: 10,
-// };
-
-// console.log("shiprocketPayload", shiprocketPayload.order_items);
-// const shiprocketResponse = await ShiprocketData.createShiprocketOrder(shiprocketPayload); 
-
-// if (shiprocketResponse.error) {
-//   throw new Error(shiprocketResponse.message || "Failed to create order on Shiprocket");
-// }
-// secondorder.shiprocketOrderId = shiprocketResponse.order_id;  
-// secondorder.shiprocketshipmentId = shiprocketResponse.shipment_id;  
-// secondorder.shiprocketchannelOrderId = shiprocketResponse.channel_order_id;  
-// await secondorder.save();
-
-  
-//   const updatedProducts = [];
-//   const lowQuantityProducts = [];
-//   const outOfStockProducts = [];
-//   // for (const item of cart.orderItems) {
-//   //   const product = item.productId;
-//   //   const size = item.size;
-
-//   //   const Orderproductsize = await Productsize.findById(size);
-
-//   //   const updatedQuantity = Orderproductsize.quantity - item.quantity;
-//   //   const isOutOfStock = updatedQuantity <= 0 ? "true" : "false";
-
-//   //   const updatedProduct = await Productsize.findByIdAndUpdate(
-//   //     size,
-//   //     { quantity: updatedQuantity, IsOutOfStock: isOutOfStock },
-//   //     { new: true }
-//   //   );
-//   //   if (updatedQuantity < 20 && updatedQuantity > 1) {
-//   //     lowQuantityProducts.push(updatedProduct);
-//   //   }
-
-//   //   if (updatedQuantity <= 0) {
-//   //     outOfStockProducts.push(updatedProduct);
-//   //   }
-//   //   updatedProducts.push(updatedProduct);
-//   // }
-
-//   // Send mail for low quantity products
-//   // if (lowQuantityProducts.length > 0) {
-//   //   let lowQuantityMessage =
-//   //     "<p>Some products are running low on quantity. Please check your inventory:</p><ul>";
-//   //   lowQuantityProducts.forEach((product) => {
-//   //     lowQuantityMessage += `<li>${product.name} : <br/> quantity : ${Orderproductsize?.quantity} </li> <img loading="lazy" src="${product.thumbnail}" alt="${product.name}" style="max-width: 100px;">`;
-//   //   });
-//   //   lowQuantityMessage += "</ul>";
-
-//   //   Mail(
-//   //     "vaibhavrathorema@gmail.com",
-//   //     "Low Product Quantity Alert",
-//   //     lowQuantityMessage,
-//   //     true
-//   //   );
-//   // }
-
-//   // Send mail for out of stock products
-//   // if (outOfStockProducts.length > 0) {
-//   //   let outOfStockMessage =
-//   //     "<p>Some products are out of stock. Please update your inventory:</p><ul>";
-//   //   outOfStockProducts.forEach((product) => {
-//   //     outOfStockMessage += `<li>${product.name}</li><img loading="lazy" src="${product.thumbnail}" alt="${product.name}" style="max-width: 100px;">`;
-//   //   });
-//   //   outOfStockMessage += "</ul>";
-
-//   //   Mail(
-//   //     "vaibhavrathorema@gmail.com",
-//   //     "Out of Stock Products Alert",
-//   //     outOfStockMessage,
-//   //     true
-//   //   );
-//   // }
-
-//   res.status(201).json({
-//     success: true,
-//     message: "Order created successfully",
-//     secondorder,
-//     updatedProducts,
-//     paymentMethod,
-//     paymentId,
-//   });
-// });
-
-// const CreateSecondOrder = TryCatch(async (req, res, next) => {
-//   const userId = req.user.id;
-//   const {
-//     CartId,
-//     paymentMethod,
-//     paymentId,
-//     paymentorderCratedAt,
-//     currency,
-//     paymentDoneAt,
-//     DeviceType,
-//   } = req.body;
-
-//   // Create the second order
-//   const secondorder = await SecondorderSchema.create({
-//     ...req.body,
-//     userId,
-//     CartId: CartId,
-//     // payment details
-//     isPaid: paymentMethod === "Razorpay",
-//     paymentId: paymentId || null,
-//     paymentorderCratedAt: paymentorderCratedAt,
-//     currency: currency,
-//     paymentDoneAt,
-//     DeviceType,
-//   });
-
-//   const userAddress = await ShipAddress.findById(secondorder.shippingAddress);
-
-//   // Extract order items from the cart
-//   const cart = await Cart.findById(CartId)
-//     .populate("orderItems.productId")
-//     .populate("orderItems.size")
-//     .populate("orderItems.productId.category");
-
-//   if (!cart) {
-//     return res.status(404).json({ success: false, message: "Cart not found" });
-//   }
-
-//   // Clear the complete cart
-//   await Cart.findByIdAndUpdate(CartId, { activecart: "false" });
-
-//   // Send mail
-//   const userEmail = req.user.email;
-//   const orderDetails = generateOrderDetails(cart, secondorder, userAddress);
-//   const orderTotal = calculateOrderTotal(cart);
-
-//   Mail(
-//     req.user.email,
-//     "Order Placed Successfully",
-//     `${orderDetails}`,
-//     (isHTML = true)
-//   );
-
-//   // Function to calculate total dimensions
-//   const calculateTotalDimensions = (orderItems) => {
-//     let totalHeight = 0;
-//     let totalWidth = 0;
-//     let totalLength = 0;
-
-//     orderItems.forEach((item) => {
-//       const size = item.size;
-
-//       const itemHeight = parseFloat(size.height) || 0;
-//       const itemWidth = parseFloat(size.width) || 0;
-//       const itemLength = parseFloat(size.length) || 0;
-
-//       totalHeight += itemHeight * item.quantity;
-//       totalWidth += itemWidth * item.quantity;
-//       totalLength += itemLength * item.quantity;
-//     });
-
-//     return {
-//       totalHeight,
-//       totalWidth,
-//       totalLength,
-//     };
-//   };
-
-//   const { totalHeight, totalWidth, totalLength } = calculateTotalDimensions(cart.orderItems);
-
-//   // Function to convert size to kilograms
-//   const convertToKg = (size, sizeType) => {
-//     // Convert sizeType to lowercase for case-insensitive comparison
-//     sizeType = sizeType.toLowerCase();
-  
-//     if (sizeType === "kg") {
-//       return parseFloat(size); // Already in kilograms
-//     } else if (sizeType === "gram") {
-//       return parseFloat(size) / 1000; // Convert grams to kilograms
-//     } else if (sizeType === "liter") {
-//       return parseFloat(size); // Assume 1 liter = 1 kg (for water-like substances)
-//     } else if (sizeType === "ML") {
-//       return parseFloat(size) / 1000; // Convert milliliters to liters, then to kilograms
-//     } else if (sizeType === "pound") {
-//       return parseFloat(size) * 0.453592; // Convert pounds to kilograms
-//     } else if (sizeType === "meter") {
-//       return parseFloat(size); // Assume 1 meter = 1 kg (for simplicity, adjust as needed)
-//     } else {
-//       return parseFloat(size); // Default to size if no conversion is needed
-//     }
-//   };
-
-//   // Function to calculate total weight dynamically
-//   const calculateTotalWeight = (orderItems) => {
-//     console.log("-=-==-=",orderItems);
-//     let totalWeight = 0;
-
-//     orderItems.forEach((item) => {
-//       const size = item.size;
-//       const sizeType = size.sizetype; // Ensure this is the correct property name
-//       const itemWeight = parseFloat(size.weight) || 0; // Ensure weight is a number
-
-//       // Convert weight to kilograms if necessary
-//       totalWeight += convertToKg(itemWeight, sizeType) * item.quantity;
-//     });
-
-//     return totalWeight;
-//   };
-
-//   const totalWeight = calculateTotalWeight(cart.orderItems) || 0.1; // Default to 0.1 kg if weight is missing
-
-//   // Prepare payload for Shiprocket
-//   const shiprocketPayload = {
-//     order_id: secondorder._id.toString(),
-//     order_date: new Date().toISOString(),
-//     pickup_location: "Primary",
-//     channel_id: "4903096",
-//     billing_customer_name: req.user.firstName,
-//     billing_last_name: req.user.lastName,
-//     client_id: req.user._id.toString(),
-//     user_id: req.user._id.toString(),
-//     billing_email: req.user.email,
-//     billing_address: userAddress.address,
-//     billing_city: userAddress.city,
-//     billing_pincode: userAddress.pincode,
-//     billing_state: userAddress.state,
-//     billing_country: userAddress.country,
-//     billing_phone: userAddress.phonenumber,
-//     shipping_is_billing: true,
-//     shipping_customer_name: req.user.firstName,
-//     shipping_last_name: req.user.lastName,
-//     shipping_address: userAddress.address,
-//     shipping_city: userAddress.city,
-//     shipping_pincode: userAddress.pincode,
-//     shipping_state: userAddress.state,
-//     shipping_country: userAddress.country,
-//     transaction_id: secondorder.paymentId,
-//     shipping_phone: userAddress.phonenumber,
-//     order_items: cart.orderItems.map((item, index) => ({
-//       sku: `SKU_${item.productId._id}_${index}`,
-//       name: item.productId.name,
-//       category: item.productId.category.toString(),
-//       units: item.quantity,
-//       selling_price: item.singleProductPrice,
-//       discount: 0,
-//       tax: 0,
-//       product_id: item.productId._id.toString(),
-//       product_image: item.productId.thumbnail,
-//       size: item.size.size, // Use the actual size value (e.g., "140")
-//       height: item.size.height,
-//       width: item.size.width,
-//       length: item.size.length,
-//       weight: item.size.weight, // Add weight here
-//     })),
-//     payment_method: paymentMethod === "Razorpay" ? "Prepaid" : "COD",
-//     sub_total: cart.totalPrice,
-//     shipping_charges: 0,
-//     length: totalLength,
-//     breadth: totalWidth,
-//     height: totalHeight,
-//     weight: totalWeight, // Ensure this is a valid number
-//   };
-
-
-//   // Send payload to Shiprocket
-//   const shiprocketResponse = await ShiprocketData.createShiprocketOrder(shiprocketPayload);
-
-//   if (shiprocketResponse.error) {
-//     throw new Error(shiprocketResponse.message || "Failed to create order on Shiprocket");
-//   }
-
-//   // Update second order with Shiprocket details
-//   secondorder.shiprocketOrderId = shiprocketResponse.order_id;
-//   secondorder.shiprocketshipmentId = shiprocketResponse.shipment_id;
-//   secondorder.shiprocketchannelOrderId = shiprocketResponse.channel_order_id;
-//   await secondorder.save();
-
-//   res.status(201).json({
-//     success: true,
-//     message: "Order created successfully",
-//     secondorder,
-//     paymentMethod,
-//     paymentId,
-//   });
-// });
-
 
 const CreateSecondOrder = TryCatch(async (req, res, next) => {
   const userId = req.user.id;
+
   const {
     CartId,
     paymentMethod,
@@ -469,7 +63,6 @@ const CreateSecondOrder = TryCatch(async (req, res, next) => {
     ...req.body,
     userId,
     CartId: CartId,
-    // payment details
     isPaid: paymentMethod === "Razorpay",
     paymentId: paymentId || null,
     paymentorderCratedAt: paymentorderCratedAt,
@@ -505,7 +98,6 @@ const CreateSecondOrder = TryCatch(async (req, res, next) => {
     (isHTML = true)
   );
 
-  // Function to calculate total dimensions
   const calculateTotalDimensions = (orderItems) => {
     let totalHeight = 0;
     let totalWidth = 0;
@@ -513,7 +105,6 @@ const CreateSecondOrder = TryCatch(async (req, res, next) => {
 
     orderItems.forEach((item) => {
       const size = item.size;
-
       const itemHeight = parseFloat(size.height) || 0;
       const itemWidth = parseFloat(size.width) || 0;
       const itemLength = parseFloat(size.length) || 0;
@@ -530,7 +121,9 @@ const CreateSecondOrder = TryCatch(async (req, res, next) => {
     };
   };
 
-  const { totalHeight, totalWidth, totalLength } = calculateTotalDimensions(cart.orderItems);
+  const { totalHeight, totalWidth, totalLength } = calculateTotalDimensions(
+    cart.orderItems
+  );
 
   // Function to convert size to kilograms
   const convertToKg = (size, sizeType) => {
@@ -633,10 +226,14 @@ const CreateSecondOrder = TryCatch(async (req, res, next) => {
   console.log("shiprocketPayload", shiprocketPayload);
 
   // Send payload to Shiprocket
-  const shiprocketResponse = await ShiprocketData.createShiprocketOrder(shiprocketPayload);
+  const shiprocketResponse = await ShiprocketData.createShiprocketOrder(
+    shiprocketPayload
+  );
 
   if (shiprocketResponse.error) {
-    throw new Error(shiprocketResponse.message || "Failed to create order on Shiprocket");
+    throw new Error(
+      shiprocketResponse.message || "Failed to create order on Shiprocket"
+    );
   }
 
   // Update second order with Shiprocket details
@@ -644,6 +241,67 @@ const CreateSecondOrder = TryCatch(async (req, res, next) => {
   secondorder.shiprocketshipmentId = shiprocketResponse.shipment_id;
   secondorder.shiprocketchannelOrderId = shiprocketResponse.channel_order_id;
   await secondorder.save();
+
+  res.status(201).json({
+    success: true,
+    message: "Order created successfully",
+    secondorder,
+    paymentMethod,
+    paymentId,
+  });
+});
+const CreateSecondOrderforselfDelivery = TryCatch(async (req, res, next) => {
+  const userId = req.user.id;
+  const {
+    CartId,
+    paymentMethod,
+    paymentId,
+    paymentorderCratedAt,
+    currency,
+    paymentDoneAt,
+    DeviceType,
+  } = req.body;
+
+  // Create the second order
+  const secondorder = await SecondorderSchema.create({
+    ...req.body,
+    userId,
+    CartId: CartId,
+    // payment details
+    isPaid: paymentMethod === "Razorpay",
+    paymentId: paymentId || null,
+    paymentorderCratedAt: paymentorderCratedAt,
+    currency: currency,
+    paymentDoneAt,
+    DeviceType,
+  });
+
+  const userAddress = await ShipAddress.findById(secondorder.shippingAddress);
+
+  // Extract order items from the cart
+  const cart = await Cart.findById(CartId)
+    .populate("orderItems.productId")
+    .populate("orderItems.size")
+    .populate("orderItems.productId.category");
+
+  if (!cart) {
+    return res.status(404).json({ success: false, message: "Cart not found" });
+  }
+
+  // Clear the complete cart
+  await Cart.findByIdAndUpdate(CartId, { activecart: "false" });
+
+  // Send mail
+  const userEmail = req.user.email;
+  const orderDetails = generateOrderDetails(cart, secondorder, userAddress);
+  const orderTotal = calculateOrderTotal(cart);
+
+  Mail(
+    req.user.email,
+    "Order Placed Successfully",
+    `${orderDetails}`,
+    (isHTML = true)
+  );
 
   res.status(201).json({
     success: true,
@@ -820,6 +478,8 @@ const GetMySecondOrder = TryCatch(async (req, res, next) => {
 
 // get second order by id
 const GetSecondOrderById = TryCatch(async (req, res, next) => {
+
+
   const secondorder = await SecondorderSchema.findById(req.params.id)
     .populate("CartId")
     .populate({
@@ -839,6 +499,7 @@ const GetSecondOrderById = TryCatch(async (req, res, next) => {
     .populate("shippingAddress")
     .populate("billingAddress")
     .populate("userId");
+
 
   res.status(200).json({
     success: true,
@@ -948,7 +609,8 @@ module.exports = {
   GetAllsecondOrders,
   UpdateSecondOrder,
   GetSecondOrderByShiprocketId,
-  getUserDetailsById
+  getUserDetailsById,
+  CreateSecondOrderforselfDelivery
   // CreateRazorpayOrder: RazorpayData.CreateRazorpayOrder,
   // Getpaymentdetailsbyorderid: RazorpayData.Getpaymentdetailsbyorderid,
 };

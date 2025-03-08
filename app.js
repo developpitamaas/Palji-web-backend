@@ -11,6 +11,7 @@ const Wishlist = require("./routes/Wishlist");
 const Message = require("./routes/usermessage");   
 const Subscribe = require("./routes/subscribe");
 const Cart = require("./routes/cart");
+const Pincode = require("./routes/pincode");
 const SecondOrder = require("./routes/SecondOrder"); 
 const cookieParser = require("cookie-parser");
 const axios = require("axios");
@@ -57,6 +58,7 @@ app.use(
   Message,
   Subscribe,
   Cart,
+  Pincode,
   SecondOrder,
   // authRoutes
 );
