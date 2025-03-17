@@ -10,12 +10,12 @@ const CreateShipedAddress = TryCatch(async (req, res, next) => {
         success: true,
         message: "Shiped address created successfully",
         shipedaddress,
-    })
+    }) 
 })
 
 // get my shiped address
 const GetMyShipedAddress = TryCatch(async (req, res, next) => {
-    const shipedaddress = await Shipedaddress.find({ userId: req.user.id });
+    const shipedaddress = await Shipedaddress.find({ userId: req.user.id , active : "true"});
     res.status(200).json({
         success: true,
         shipedaddress
@@ -36,6 +36,20 @@ const UpdateShipedAddress = TryCatch(async (req, res, next) => {
 })
 
 // delete shiped address
+// const DeleteShipedAddress = TryCatch(async (req, res, next) => {
+//     const shipedaddress = await Shipedaddress.findById(req.params.id);
+//     if (!shipedaddress) {
+//         return res.status(404).json({
+//             success: false,
+//             message: "Shiped address not found",
+//         });
+//     }
+//     await shipedaddress.deleteOne();
+//     res.status(200).json({
+//         success: true,
+//         message: "Shiped address deleted successfully",
+//     });
+// })
 const DeleteShipedAddress = TryCatch(async (req, res, next) => {
     const shipedaddress = await Shipedaddress.findById(req.params.id);
     if (!shipedaddress) {
@@ -44,12 +58,16 @@ const DeleteShipedAddress = TryCatch(async (req, res, next) => {
             message: "Shiped address not found",
         });
     }
-    await shipedaddress.deleteOne();
+
+    // Deactivate the address instead of deleting it
+    shipedaddress.active = "false";
+    await shipedaddress.save();
+
     res.status(200).json({
         success: true,
-        message: "Shiped address deleted successfully",
+        message: "Shiped address deactivated successfully",
     });
-})
+});
 
 // get shiped address by id
 const GetShipedAddressById = TryCatch(async (req, res, next) => {

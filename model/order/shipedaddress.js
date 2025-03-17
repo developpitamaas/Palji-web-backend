@@ -29,6 +29,10 @@ const shipedAddressSchema = new mongoose.Schema({
     userId : {
         ref: "user",
         type: mongoose.Schema.Types.ObjectId
+    },
+    active: {
+        type: String,
+        default: "true",
     }
 })
 
