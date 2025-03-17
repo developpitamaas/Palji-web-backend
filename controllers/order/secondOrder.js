@@ -477,8 +477,38 @@ const GetMySecondOrder = TryCatch(async (req, res, next) => {
 });
 
 // get second order by id
-const GetSecondOrderById = TryCatch(async (req, res, next) => {
+// const GetSecondOrderById = TryCatch(async (req, res, next) => {
 
+
+//   const secondorder = await SecondorderSchema.findById(req.params.id)
+//     .populate("CartId")
+//     .populate({
+//       path: "CartId",
+//       populate: {
+//         path: "orderItems.productId",
+//         model: "product",
+//       },
+//     })
+//     .populate({
+//       path: "CartId",
+//       populate: {
+//         path: "orderItems.size",
+//         select: "size sizetype",
+//       },
+//     })
+//     .populate("shippingAddress")
+//     .populate("billingAddress")
+//     .populate("userId");
+
+
+//   res.status(200).json({
+//     success: true,
+//     message: "Order fetched successfully vaibhaknknknknk",
+//     secondorder,
+//   });
+// });
+
+const GetSecondOrderById = TryCatch(async (req, res, next) => {
 
   const secondorder = await SecondorderSchema.findById(req.params.id)
     .populate("CartId")
@@ -487,7 +517,11 @@ const GetSecondOrderById = TryCatch(async (req, res, next) => {
       populate: {
         path: "orderItems.productId",
         model: "product",
-      },
+        populate: {
+          path: "category", // Populate the category field in productId
+          model: "category", // Assuming the model for categories is named "category"
+        }
+      }
     })
     .populate({
       path: "CartId",
@@ -500,13 +534,14 @@ const GetSecondOrderById = TryCatch(async (req, res, next) => {
     .populate("billingAddress")
     .populate("userId");
 
-
   res.status(200).json({
     success: true,
     message: "Order fetched successfully vaibhaknknknknk",
     secondorder,
   });
 });
+
+
 const GetSecondOrderByShiprocketId = TryCatch(async (req, res, next) => {
   const secondorder = await SecondorderSchema.findOne({
     shiprocketOrderId: req.params.id,
