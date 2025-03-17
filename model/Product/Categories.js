@@ -13,6 +13,9 @@ const categorySchema = new mongoose.Schema({
         type: [String], 
         default: [],
     },
+    tax:{
+        type: Number,
+    }
      
 })
 

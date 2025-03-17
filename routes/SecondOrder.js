@@ -5,7 +5,7 @@ const ShiprocketData = require("../controllers/order/shiprocket/shiprocket");
 const Auth = require("../middleware/Auth");
 const RazorpayData = require("../controllers/order/razorpay/razorpayController");
    
- 
+  
 SecondOrder.route("/create-second-order").post(Auth.IsAuthenticateUser, Data.CreateSecondOrder)
 SecondOrder.route("/create-second-order-for-self-delivery").post(Auth.IsAuthenticateUser, Data.CreateSecondOrderforselfDelivery)
 SecondOrder.route("/create-razorpay-order").post(RazorpayData.CreateRazorpayOrder) 

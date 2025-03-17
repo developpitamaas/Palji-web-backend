@@ -1,4 +1,5 @@
 const axios = require("axios");
+const SecondorderSchema = require("../../../model/order/orders");
 
 // create order on Shiprocket
 const createShiprocketOrder = async (orderData) => {
@@ -171,11 +172,11 @@ const getOrdersByUserId = async (req, res) => {
   };
   try {
     const response = await axios.get(url, { headers });
-    // console.log(response.data.data.others.client_id);
     const userOrders = response.data.data.filter(
-      // (order) => { console.log(order.others.client_id, "---", userId , order.others.client_id == userId),  order.others.client_id == userId}
       (order) => order.others.client_id == userId
     );
+      const data = await SecondorderSchema.find({ userId: req.params.id })
+    
 
     res.status(200).json({
       success: true,
