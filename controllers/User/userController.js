@@ -72,6 +72,32 @@ const RegisterUser = Trycatch(async (req, res, next) => {
   });
 });
 
+
+const Registeruserwithpassword = Trycatch(async (req, res, next) => {
+    // find user by email 
+    console.log("---333--------------");
+
+    const useremail = await User.findOne({ email: req.body.email });
+    console.log("---333",useremail);
+
+    if (useremail) {
+      console.log("---11",useremail);
+      return res.status(400).json({
+        success: false,
+        message: "User already exists",
+      });
+    }
+    // Create the user
+    const user = await User.create(req.body);
+    sendToken(user, 201, res);
+    // Send the response
+    res.status(201).json({
+      success: true,
+      user,
+    });
+
+});
+
 // Login User
 const LoginUser = Trycatch(async (req, res, next) => {
   const { email, password } = req.body;
@@ -441,6 +467,7 @@ const sendEmailToAllUsers = Trycatch(async (req, res, next) => {
 // export all
 module.exports = {
   RegisterUser,
+  Registeruserwithpassword,
   LoginUser,
   myProfile,
   updateUser,

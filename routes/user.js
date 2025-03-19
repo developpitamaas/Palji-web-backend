@@ -5,6 +5,7 @@ const auth = require("../middleware/Auth");
 
 // register
 User.route("/register-user").post(Data.RegisterUser)
+User.route("/register-user-by-pass").post(Data.Registeruserwithpassword)
 
 // login
 User.route("/login-user").post(Data.LoginUser)
