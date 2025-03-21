@@ -14,7 +14,6 @@ const addToCart = TryCatch(async (req, res, next) => {
         message: "Product does not exist.",
       });
     }
-console.log("--1")
     // Check if user has an existing cart
     let cart = await Cart.findOne({ userId: req.user.id, activecart: "true" });
 
@@ -148,38 +147,6 @@ const GetCart = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
-// const GetCart = async (req, res) => {
-//   try {
-//     const cart = await Cart.findOne({ userId: req.user.id, activecart: "true" })
-//       .populate({
-//         path: "orderItems",
-//         populate: {
-//           path: "productId",  
-//           select: "name price PriceAfterDiscount discountPercentage thumbnail category ",
-//           model: "product",
-//         },
-//       })
-//       .populate({
-//         path: "orderItems",
-//         populate: {
-//           path: "size",
-//           model: "productsize",
-//           select: "size sizetype price discountPercentage FinalPrice",
-//         },
-//       });
-
-//     if (!cart) {
-//       return res.status(200).json({ message: "Cart is empty" });
-//     }
-
-//     res.status(200).json(cart);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
 
 const RemoveFromCart = TryCatch(async (req, res) => {
   const { productId, selectProductSize } = req.body;
@@ -459,6 +426,46 @@ const RemoveCoupon = TryCatch(async (req, res) => {
   });
 });
 
+
+
+const updateCartTotalPriceAndDeliveryCharges = async (req, res) => {
+  try {
+    // Get the cart
+    const cart = await Cart.findOne({ userId: req.user.id, activecart: "true" });
+
+    if (!cart) {
+      return res.status(200).json({ message: "Cart is empty" });
+    }
+
+    // Get the delivery charges from the request body
+    const { deliveryCharges } = req.body;
+
+    // Calculate the new totalPrice (totalPriceWithoutDiscount + deliveryCharges)
+    const newTotalPrice = cart.totalPrice + deliveryCharges;
+
+    // Update the cart document with new totalPrice and deliveryCharges
+    cart.totalPrice = newTotalPrice;
+    cart.deliveryCharges = deliveryCharges;
+
+    // Save the updated cart
+    await cart.save();
+
+    // Return the updated cart
+    res.status(200).json({
+      message: "Cart updated successfully",
+      cart: {
+        ...cart._doc,  // Ensure the response includes the updated cart data
+        totalPrice: newTotalPrice,
+        deliveryCharges,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
 // export
 module.exports = {
   addToCart,
@@ -467,4 +474,5 @@ module.exports = {
   ApplyCoupon,
   RemoveCoupon,
   DeleteProductFromCart,
+  updateCartTotalPriceAndDeliveryCharges
 };

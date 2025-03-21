@@ -98,9 +98,6 @@ const SecondorderSchema = new mongoose.Schema(
     UserContact: {
       type: String,
     },
-    DeviceType: {
-      type: String,
-    },
     paymentId: {
       type: String,
       default: null,
@@ -128,16 +125,7 @@ const SecondorderSchema = new mongoose.Schema(
     trackingNumber: {
       type: String,
     },
-    orderSource: {
-      type: String,
-      enum: ["Website", "Mobile App", "Third-party"],
-    },
-    refundStatus: {
-      type: String,
-      enum: ["Not Requested", "Requested", "Processed"],
-      default: "Not Requested",
-    },
-    orderNotes: {
+     orderNotes: {
       type: String,
     },
     // Timestamps

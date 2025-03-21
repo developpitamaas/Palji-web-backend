@@ -22,7 +22,10 @@ Cart.route("/remove-from-cart").post(
 Cart.route("/delete-product-from-cart").post(
   auth.IsAuthenticateUser,
   Data.DeleteProductFromCart
-);
+); 
+ 
+// updateCartTotalPriceAndDeliveryCharges
+Cart.route("/update-cart-data").put(auth.IsAuthenticateUser, Data.updateCartTotalPriceAndDeliveryCharges)
 
 // exports
 module.exports = Cart;
