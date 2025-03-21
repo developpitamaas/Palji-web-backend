@@ -438,10 +438,16 @@ const updateCartTotalPriceAndDeliveryCharges = async (req, res) => {
     }
 
     // Get the delivery charges from the request body
-    const { deliveryCharges } = req.body;
+    const { deliveryCharges, payment } = req.body;
 
+var newTotalPrice;
     // Calculate the new totalPrice (totalPriceWithoutDiscount + deliveryCharges)
-    const newTotalPrice = cart.totalPrice + deliveryCharges;
+    if(payment === "Razorpay"){
+       newTotalPrice = cart.totalPrice + deliveryCharges - 25;
+    }else{
+       newTotalPrice = cart.totalPrice + deliveryCharges;
+    }
+
 
     // Update the cart document with new totalPrice and deliveryCharges
     cart.totalPrice = newTotalPrice;
