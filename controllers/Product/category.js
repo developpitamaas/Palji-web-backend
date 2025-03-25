@@ -161,7 +161,7 @@ const DeleteSubCategory = Trycatch(async (req, res, next) => {
 // });
 const GetAllProductsByCategory = Trycatch(async (req, res, next) => {
   // Fetch products based on category ID
-  const products = await Product.find({ category: req.params.id });
+  const products = await Product.find({ category: req.params.id }).populate("category").populate("subcategory");
 
   // For each product, fetch its sizes and return the product along with size data
   const productsWithSize = await Promise.all(
