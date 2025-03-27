@@ -471,6 +471,43 @@ var newTotalPrice;
   }
 };
 
+const updateCartMessage = async (req, res) => {
+  try {
+    const { productId, sizeId, message } = req.body;
+
+    // Find the cart for the user
+    const cart = await Cart.findOne({ userId: req.user.id, activecart: "true" });
+
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    // Find the specific order item to update
+    const orderItem = cart.orderItems.find(item => 
+      item.productId.toString() === productId && 
+      item.size.toString() === sizeId
+    );
+
+    if (!orderItem) {
+      return res.status(404).json({ message: "Product not found in cart" });
+    }
+
+    // Update the message for this specific order item
+    orderItem.cakemessage = message;
+
+    // Save the updated cart
+    await cart.save();
+
+    res.status(200).json({ 
+      message: "Message updated successfully",
+      updatedCart: cart
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+      
 
 // export
 module.exports = {
@@ -480,5 +517,6 @@ module.exports = {
   ApplyCoupon,
   RemoveCoupon,
   DeleteProductFromCart,
-  updateCartTotalPriceAndDeliveryCharges
+  updateCartTotalPriceAndDeliveryCharges,
+  updateCartMessage
 };

@@ -13,6 +13,9 @@ const cartSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "product",
       },
+      cakemessage: {
+        type: String,
+      },
       singleProductPrice: {
         type: Number,
       },

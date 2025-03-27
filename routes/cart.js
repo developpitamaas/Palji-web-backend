@@ -26,6 +26,7 @@ Cart.route("/delete-product-from-cart").post(
  
 // updateCartTotalPriceAndDeliveryCharges
 Cart.route("/update-cart-data").put(auth.IsAuthenticateUser, Data.updateCartTotalPriceAndDeliveryCharges)
+Cart.route("/update-cart-message").put(auth.IsAuthenticateUser, Data.updateCartMessage)
 
 // exports
 module.exports = Cart;
