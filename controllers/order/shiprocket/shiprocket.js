@@ -9,10 +9,7 @@ const createShiprocketOrder = async (orderData) => {
     Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
   };
   try {
-    console.log(
-      "Sending payload to Shiprocket:",
-      JSON.stringify(orderData, null, 2)
-    );
+  
     const response = await axios.post(url, orderData, { headers });
     return response.data;
   } catch (error) {
@@ -118,7 +115,6 @@ const getOrderById = async (req, res) => {
 
 const cancelOrderById = async (req, res) => { 
   const orderId = req.params.id;  // Get the order ID from the request parameters
-  console.log('Canceling order with ID:', orderId);
 
   if (!orderId) {
     return res.status(400).json({
@@ -269,7 +265,6 @@ const getOrdersByUserId = async (req, res) => {
 const checkServiceability = async (req, res) => {
   // Extract parameters from the query string
   const { pickup_postcode, delivery_postcode, weight, cod, order_id } = req.query; 
-  console.log(req.query);
 
   // Validation to check if required parameters are missing
   if (!pickup_postcode || !delivery_postcode || !weight) {
@@ -347,8 +342,6 @@ const createShipment = async (req, res) => {
     };
 
     const awbResponse = await axios.post(awbAssignUrl, awbPayload, { headers });
-    console.log("AWB Assign Response:", awbResponse.data);
-    console.log("--------2", awbResponse.data.response.data.shipment_id);
 
     // Check if AWB assignment was successful
     if (awbResponse.data.awb_assign_status === 0) {
@@ -360,7 +353,6 @@ const createShipment = async (req, res) => {
     }
 
     const shipmentId = awbResponse.data.response.data.shipment_id; // Extract shipment ID from the response
-    console.log("--------3-------", shipmentId);
 
     // Step 3: Generate Pickup Request
     const pickupUrl = "https://apiv2.shiprocket.in/v1/external/courier/generate/pickup";
@@ -369,7 +361,6 @@ const createShipment = async (req, res) => {
     };
 
     const pickupResponse = await axios.post(pickupUrl, pickupPayload, { headers });
-    console.log("Pickup Response:", pickupResponse.data);
 
     return res.status(200).json({
       success: true,
