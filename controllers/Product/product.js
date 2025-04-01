@@ -55,6 +55,26 @@ const CreateProduct = Trycatch(async (req, res, next) => {
   });
 });
 
+const getAlltopsallerproducts = Trycatch(async (req, res, next) => {
+  const products = await Product.find({topsaller : true}).populate("category").populate("subcategory");
+
+    const productsWithSize = await Promise.all(
+      products.map(async (product) => {
+        // Find sizes for the current product
+        const size = await ProductSize.find({ productId: product._id });
+        return { ...product._doc, size }; // Return product with size data
+      })
+    );
+  
+    const totalProducts = products.length;
+  
+
+  res.status(200).json({
+    success: true,
+    totalProducts,
+    products: productsWithSize,
+  });
+});
  
 
 // get all products
@@ -434,5 +454,6 @@ module.exports = {
   GetSingleProduct,
   UpdateProduct,
   DeleteProduct,
-  GetAllProductsForAdmin
+  GetAllProductsForAdmin,
+  getAlltopsallerproducts
 };

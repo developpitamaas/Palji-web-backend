@@ -11,13 +11,13 @@ Product.route("/add-productsize").post(auth.IsAuthenticateUser,auth.authorizeRol
 Product.route("/update-productsize/:id").put(auth.IsAuthenticateUser,auth.authorizeRole("admin") ,ProductSize.UpdateProductsize)
 Product.route("/delete-productsize/:id").delete(auth.IsAuthenticateUser,auth.authorizeRole("admin") ,ProductSize.DeleteProductsize)
 
-
 // create product
 Product.route("/create-product").post(auth.IsAuthenticateUser,auth.authorizeRole("admin") ,Data.CreateProduct)
 // get all products
 Product.route("/get-all-products").get(Data.GetAllProducts)
 Product.route("/get-all-products-for-admin").get(Data.GetAllProductsForAdmin)
 // get single product
+Product.route("/get-all-top-saller-products").get(Data.getAlltopsallerproducts)
 Product.route("/get-single-product/:id").get(Data.GetSingleProduct)
 // update product
 Product.route("/update-product/:id").put(auth.IsAuthenticateUser,auth.authorizeRole("admin") ,Data.UpdateProduct)

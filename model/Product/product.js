@@ -51,6 +51,10 @@ const productSchema = new mongoose.Schema({
     type: String,
     default: "false",
   },
+  topsaller: {
+    type: String,
+    default: "false",
+  },
 });
 
 // Export product model
