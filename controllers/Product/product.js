@@ -55,27 +55,54 @@ const CreateProduct = Trycatch(async (req, res, next) => {
   });
 });
 
+// const getAlltopsallerproducts = Trycatch(async (req, res, next) => {
+//   const products = await Product.find({topsaller : true}).populate("category").populate("subcategory");
+
+//     const productsWithSize = await Promise.all(
+//       products.map(async (product) => {
+//         const size = await ProductSize.find({ productId: product._id });
+//         return { ...product._doc, size }; 
+//       })
+//     );
+//     const totalProducts = products.length;
+//   res.status(200).json({
+//     success: true,
+//     totalProducts,
+//     products: productsWithSize,
+//   });
+// });
+ 
 const getAlltopsallerproducts = Trycatch(async (req, res, next) => {
-  const products = await Product.find({topsaller : true}).populate("category").populate("subcategory");
-
-    const productsWithSize = await Promise.all(
-      products.map(async (product) => {
-        // Find sizes for the current product
-        const size = await ProductSize.find({ productId: product._id });
-        return { ...product._doc, size }; // Return product with size data
-      })
-    );
+  const { categoryId } = req.query;
   
-    const totalProducts = products.length;
+  // Build the query object
+  const query = { topsaller: "true" }; // Note: In your schema, topsaller is a String
   
+  // If categoryId is provided, add it to the query
+  if (categoryId) {
+    query.category = categoryId;
+  }
+  console.log(query);
 
+  const products = await Product.find(query)
+    .populate("category")
+    .populate("subcategory");
+
+  const productsWithSize = await Promise.all(
+    products.map(async (product) => {
+      const size = await ProductSize.find({ productId: product._id });
+      return { ...product._doc, size }; 
+    })
+  );
+
+  const totalProducts = products.length;
+  
   res.status(200).json({
     success: true,
     totalProducts,
     products: productsWithSize,
   });
 });
- 
 
 // get all products
 const GetAllProductsForAdmin = Trycatch(async (req, res, next) => {
