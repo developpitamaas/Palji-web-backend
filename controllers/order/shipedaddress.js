@@ -8,7 +8,7 @@ const CreateShipedAddress = TryCatch(async (req, res, next) => {
     const shipedaddress = await Shipedaddress.create(req.body);
     res.status(201).json({
         success: true,
-        message: "Shiped address created successfully",
+        message: "Shipping address added successfully",
         shipedaddress,
     }) 
 })

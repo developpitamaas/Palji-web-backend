@@ -6,6 +6,8 @@ const Productsize = require("../../model/Product/productsize");
 
 const addToCart = TryCatch(async (req, res, next) => {
   try {
+    console.log("-=-=",req.user.id)
+
     const { productId, quantity, selectProductSize } = req.body;
     const product = await Product.findById(productId);
     if (!product) {

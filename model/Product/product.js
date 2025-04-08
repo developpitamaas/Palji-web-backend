@@ -26,6 +26,7 @@ const productSchema = new mongoose.Schema({
         "https://nayemdevs.com/wp-content/uploads/2020/03/default-product-image.png",
     },
   ],
+
   thumbnail: {
     type: String,
     default:
@@ -55,6 +56,16 @@ const productSchema = new mongoose.Schema({
     type: String,
     default: "false",
   },
+});
+
+productSchema.pre('save', function(next) {
+  if (this.isNew || this.isModified('image')) {
+    // Assign incremental IDs to images
+    this.image.forEach((img, index) => {
+      img.id = index + 1;
+    });
+  }
+  next();
 });
 
 // Export product model
