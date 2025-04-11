@@ -12,6 +12,7 @@ Cart.route("/remove-coupon").post(auth.IsAuthenticateUser, Data.RemoveCoupon);
 
 // add to cart
 Cart.route("/add-to-cart").post(auth.IsAuthenticateUser, Data.addToCart);
+Cart.route("/add-to-cart-cake").post(auth.IsAuthenticateUser, Data.addToCartcake);
 
 // remove from cart
 Cart.route("/remove-from-cart").post(

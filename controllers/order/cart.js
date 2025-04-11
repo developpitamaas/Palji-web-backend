@@ -6,9 +6,7 @@ const Productsize = require("../../model/Product/productsize");
 
 const addToCart = TryCatch(async (req, res, next) => {
   try {
-    console.log("-=-=",req.user.id)
-
-    const { productId, quantity, selectProductSize } = req.body;
+    const { productId, quantity, selectProductSize,cakemessage } = req.body;
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(400).json({
@@ -26,7 +24,10 @@ const addToCart = TryCatch(async (req, res, next) => {
 
     // Check if the cart has orderItems array
     if (!cart.orderItems || !Array.isArray(cart.orderItems)) {
-      cart.orderItems = [];
+      cart.orderItems = [
+        cakemessage
+
+      ];
     }
 
     // Find the product in the cart
@@ -41,13 +42,18 @@ const addToCart = TryCatch(async (req, res, next) => {
       // If product exists, update the quantity
       cart.orderItems[existingItemIndex].quantity += quantity;
     } else {
+
+    console.log("cakemessage",cakemessage)
+
       // If product doesn't exist, add it to the cart
       cart.orderItems.push({
         productId,
         quantity,
         size: selectProductSize,
+        cakemessage
+
       });
-    }
+    } 
 
     await cart.save();
 
@@ -92,6 +98,221 @@ const addToCart = TryCatch(async (req, res, next) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
+
+
+
+
+
+const addToCartcake = TryCatch(async (req, res, next) => {
+  try {
+    console.log("=-=-cake")
+    const { productId, quantity, selectProductSize, cakeMessage } = req.body;
+    const product = await Product.findById(productId);
+    
+    if (!product) {
+      return res.status(400).json({
+        success: false,
+        message: "Product does not exist.",
+      });
+    }
+
+    let cart = await Cart.findOne({ userId: req.user.id, activecart: "true" });
+    if (!cart) {
+      cart = new Cart({ userId: req.user.id, orderItems: [] });
+    }
+
+    if (!cart.orderItems || !Array.isArray(cart.orderItems)) {
+      cart.orderItems = [];
+    }
+
+    // For cake products, we'll add each quantity as separate items
+    if (product.category.toString() === "67b451f7ec3a4e4a3bbe5633") {
+      // Add each cake as a separate item in cart
+      for (let i = 0; i < quantity; i++) {
+        cart.orderItems.push({
+          productId,
+          quantity: 1,
+          size: selectProductSize,
+          cakemessage: cakeMessage || "", // Store message for each cake
+          isCake: true,
+          cakeIndex: cart.orderItems.filter(item => 
+            item.productId.toString() === productId.toString() &&
+            item.size.toString() === selectProductSize.toString()
+          ).length + 1 // Track cake position
+        });
+      }
+    } else {
+      // Normal product handling
+      const existingItemIndex = cart.orderItems.findIndex((item) => {
+        return (
+          item.productId.toString() === productId.toString() &&
+          item.size.toString() === selectProductSize.toString()
+        );
+      });
+
+      if (existingItemIndex !== -1) {
+        cart.orderItems[existingItemIndex].quantity += quantity;
+      } else {
+        cart.orderItems.push({
+          productId,
+          quantity,
+          size: selectProductSize
+        });
+      }
+    }
+
+    // Recalculate cart totals
+    const processedOrderItems = await calculateTotalPriceWithCoupons(cart.orderItems);
+    const totalProductPrice = processedOrderItems.reduce(
+      (total, item) => total + item.totalPrice,
+      0
+    );
+    const PriceWithoutDiscount = processedOrderItems.reduce(
+      (total, item) => total + item.WithOurDiscount,
+      0
+    );
+
+    cart.orderItems = processedOrderItems;
+    cart.totalPriceWithoutDiscount = PriceWithoutDiscount;
+    cart.totalPrice = totalProductPrice;
+
+    if (cart.coupancode) {
+      const couponFind = await Coupon.findOne({ Coupancode: cart.coupancode });
+      if (couponFind) {
+        const discountAmount = (cart.totalPrice * couponFind.discountPercentage) / 100;
+        cart.couapnDiscount = discountAmount;
+        cart.totalPrice -= discountAmount;
+      }
+    }
+
+    await cart.save();
+
+    res.status(200).json({
+      success: true,
+      cart,
+      requiresMessage: product.category.toString() === "67b451f7ec3a4e4a3bbe5633"
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+
+
+
+
+// const addToCart = TryCatch(async (req, res, next) => {
+//   try {
+//     const { productId, quantity, selectProductSize, cakemessage } = req.body;
+//     const product = await Product.findById(productId);
+//     if (!product) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Product does not exist.",
+//       });
+//     }
+
+//     // Check if user has an existing cart
+//     let cart = await Cart.findOne({ userId: req.user.id, activecart: "true" });
+
+//     if (!cart) {
+//       // If no cart exists, create a new one
+//       cart = new Cart({ 
+//         userId: req.user.id, 
+//         orderItems: [] 
+//       });
+//     }
+
+//     // Initialize orderItems if it doesn't exist
+//     if (!cart.orderItems || !Array.isArray(cart.orderItems)) {
+//       cart.orderItems = [];
+//     }
+
+//     // Find the product in the cart
+//     const existingItemIndex = cart.orderItems.findIndex((item) => {
+//       return (
+//         item.productId.toString() === productId.toString() &&
+//         item.size.toString() === selectProductSize.toString()
+//       );
+//     });
+
+//     if (existingItemIndex !== -1) {
+//       // If product exists, update the quantity
+//       cart.orderItems[existingItemIndex].quantity += quantity;
+//       // Update cake message if provided
+//       // if (cakemessage) {
+//       //   cart.orderItems[existingItemIndex].cakemessage = cakemessage;
+//       // }
+//     } else {
+//       // If product doesn't exist, add it to the cart
+//       const newItem = {
+//         productId,
+//         quantity,
+//         size: selectProductSize,
+//       };
+//       cart.orderItems.push(newItem);
+//     }
+    
+
+//     // First save to ensure we have the cart with all items
+//     await cart.save();
+
+//     // Calculate total price considering coupons
+//     const processedOrderItems = await calculateTotalPriceWithCoupons(
+//       cart.orderItems
+//     );
+    
+//     // Calculate total product price
+//     const totalProductPrice = processedOrderItems.reduce(
+//       (total, item) => total + item.totalPrice,
+//       0
+//     );
+//     const PriceWithoutDiscount = processedOrderItems.reduce(
+//       (total, item) => total + item.WithOurDiscount,
+//       0
+//     );
+
+//     // Update the existing cart with new details
+//     cart.orderItems = processedOrderItems;
+//     cart.totalPriceWithoutDiscount = PriceWithoutDiscount;
+//     cart.totalPrice = totalProductPrice;
+
+//     if (cart.coupancode) {
+//       const couponFind = await Coupon.findOne({ Coupancode: cart.coupancode });
+//       if (couponFind) {
+//         const couponDiscountPercentage = couponFind.discountPercentage;
+//         const discountAmount = (cart.totalPrice * couponDiscountPercentage) / 100;
+//         cart.couapnDiscount = discountAmount;
+//         cart.totalPrice -= discountAmount;
+//       }
+//     }
+
+//     // Final save with all calculations
+//     await cart.save();
+// console.log("----------0.1");
+
+//     if(cakemessage !== null && cakemessage !== undefined && cakemessage !== ''){
+// console.log("----------1");
+      
+//       const orderItem = cart.orderItems.find(item => 
+//       item.productId.toString() === productId && 
+//       item.size.toString() === selectProductSize
+//     );
+//     orderItem.cakemessage = cakemessage;
+    
+//     await cart.save();
+//   }
+
+
+//     // Send response with order details
+//     res.status(200).json({
+//       success: true,
+//       cart,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// });
 
 async function calculateTotalPriceWithCoupons(orderItems) {
   const processedItems = [];
@@ -520,5 +741,6 @@ module.exports = {
   RemoveCoupon,
   DeleteProductFromCart,
   updateCartTotalPriceAndDeliveryCharges,
-  updateCartMessage
+  updateCartMessage,
+  addToCartcake
 };
