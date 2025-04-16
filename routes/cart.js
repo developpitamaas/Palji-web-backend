@@ -13,6 +13,9 @@ Cart.route("/remove-coupon").post(auth.IsAuthenticateUser, Data.RemoveCoupon);
 // add to cart
 Cart.route("/add-to-cart").post(auth.IsAuthenticateUser, Data.addToCart);
 Cart.route("/add-to-cart-cake").post(auth.IsAuthenticateUser, Data.addToCartcake);
+Cart.route("/remove-from-cart-cake").post(auth.IsAuthenticateUser, Data.removeFromCartcake);
+Cart.route("/increment-cake").post(auth.IsAuthenticateUser, Data.incrementCakeQuantity );
+Cart.route("/decrement-cake").post(auth.IsAuthenticateUser, Data.decrementCakeQuantity  );
 
 // remove from cart
 Cart.route("/remove-from-cart").post(
