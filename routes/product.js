@@ -3,6 +3,7 @@ const Product = express.Router();
 const Data = require("../controllers/Product/product");
 const auth = require("../middleware/Auth");
 const Include = require("../controllers/Product/includecontroller");
+const Ingredient = require("../controllers/Product/ingredientcontroller");
 const ProductSize = require("../controllers/Product/Productsize");
 const Nutrition = require("../controllers/Product/nutritioncontroller");
 
@@ -38,9 +39,17 @@ Product.route("/include-product").post(auth.IsAuthenticateUser,auth.authorizeRol
 // get all includes
 Product.route("/get-all-includes/:productId").get(Include.GetAllIncludes)
 // update include
-Product.route("/update-include/:productId").put(auth.IsAuthenticateUser,auth.authorizeRole("admin") ,Include.UpdateInclude)
+Product.route("/update-include/:productId").put(auth.IsAuthenticateUser,auth.authorizeRole("admin") ,Ingredient.Updateingredient)
 // delete include
-Product.route("/delete-include/:productId").delete(auth.IsAuthenticateUser,auth.authorizeRole("admin") ,Include.DeleteInclude)
+Product.route("/delete-include/:productId").delete(auth.IsAuthenticateUser,auth.authorizeRole("admin") ,Ingredient.Deleteingredient)
+// Include
+Product.route("/ingredient-product").post(auth.IsAuthenticateUser,auth.authorizeRole("admin") ,Ingredient.Createingredient)
+// get all includes
+Product.route("/get-all-ingredient/:productId").get(Ingredient.GetAllingredient)
+// update include
+Product.route("/update-ingredient/:productId").put(auth.IsAuthenticateUser,auth.authorizeRole("admin") ,Ingredient.Updateingredient)
+// delete include
+Product.route("/delete-ingredient/:productId").delete(auth.IsAuthenticateUser,auth.authorizeRole("admin") ,Ingredient.Deleteingredient)
 
 
 // exports

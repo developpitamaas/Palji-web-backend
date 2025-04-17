@@ -1,5 +1,6 @@
 const Product = require("../../model/Product/product");
 const Include = require("../../model/Product/include");
+const IngredientData = require("../../model/Product/ingredient");
 const Nutrition = require("../../model/Product/nutrition");
 const ProductSize = require("../../model/Product/productsize");
 
@@ -9,7 +10,7 @@ const ApiFeatures = require("../../utils/apifeature");
 
 const CreateProduct = Trycatch(async (req, res, next) => {
   const { price, discountPercentage, productSizes,productNuturitions } = req.body;
-  const { deliverables } = req.body;
+  const { deliverables,Ingredient } = req.body;
   
   let product;
   if (discountPercentage) {
@@ -46,6 +47,12 @@ const CreateProduct = Trycatch(async (req, res, next) => {
     await Include.create({
       productId: product._id,
       include: deliverable,
+    });
+  }
+   for (let deliverable of Ingredient) {
+    await IngredientData.create({
+      productId: product._id,
+      ingredient: deliverable,
     });
   }
 
@@ -368,10 +375,12 @@ const GetSingleProduct = Trycatch(async (req, res, next) => {
   // send all Include
   const sizes = await ProductSize.find({ productId: product._id });
   const include = await Include.find({ productId: req.params.id })
+  const Ingredients = await IngredientData.find({ productId: req.params.id })
   const productNuturitions = await Nutrition.find({ productId: req.params.id })
   res.status(200).json({
     success: true,
     include,
+    Ingredients,
     product,
     sizes,
     productNuturitions
