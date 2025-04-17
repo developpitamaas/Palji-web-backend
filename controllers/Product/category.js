@@ -83,12 +83,34 @@ const GetSingleCategory = Trycatch(async (req, res, next) => {
 });
 
 // update product category
-const UpdateCategory = Trycatch(async (req, res, next) => {
-  const { availablePinCodes } = req.body; // Extract pin codes from request body
+// const UpdateCategory = Trycatch(async (req, res, next) => {
+//   const { availablePinCodes } = req.body; // Extract pin codes from request body
+//   const category = await Category.findByIdAndUpdate(
+//     req.params.id,
+//     { ...req.body, availablePinCodes }, // Ensure pin codes are updated
+//     {
+//       new: true,
+//       runValidators: true,
+//       useFindAndModify: false,
+//     }
+//   );
 
+//   if (!category) {
+//     return res.status(404).json({ success: false, message: "Category not found" });
+//   }
+
+//   res.status(200).json({
+//     success: true,
+//     category,
+//   });
+// });
+const UpdateCategory = Trycatch(async (req, res, next) => {
+  const { availablePinCodes, subcategorieslist } = req.body;
+  
+  // Update the main category
   const category = await Category.findByIdAndUpdate(
     req.params.id,
-    { ...req.body, availablePinCodes }, // Ensure pin codes are updated
+    { ...req.body, availablePinCodes },
     {
       new: true,
       runValidators: true,
@@ -100,9 +122,57 @@ const UpdateCategory = Trycatch(async (req, res, next) => {
     return res.status(404).json({ success: false, message: "Category not found" });
   }
 
+  // Handle subcategories updates
+  if (subcategorieslist && Array.isArray(subcategorieslist)) {
+    // First get all existing subcategories for this category
+    const existingSubcategories = await Subcategory.find({ category: req.params.id });
+    
+    // Create a map of existing subcategories by name for quick lookup
+    const existingSubcatMap = {};
+    existingSubcategories.forEach(sub => {
+      existingSubcatMap[sub.name] = sub;
+    });
+
+    // Process each subcategory in the request
+    for (const subcatData of subcategorieslist) {
+      if (subcatData._id) {
+        // Update existing subcategory if ID is provided
+        await Subcategory.findByIdAndUpdate(
+          subcatData._id,
+          {
+            name: subcatData.name,
+            description: subcatData.description
+          },
+          { new: true, runValidators: true }
+        );
+      } else if (existingSubcatMap[subcatData.name]) {
+        // Update existing subcategory if name matches (but no ID provided)
+        await Subcategory.findByIdAndUpdate(
+          existingSubcatMap[subcatData.name]._id,
+          {
+            name: subcatData.name,
+            description: subcatData.description
+          },
+          { new: true, runValidators: true }
+        );
+      } else {
+        // Create new subcategory if it doesn't exist
+        await Subcategory.create({
+          category: req.params.id,
+          name: subcatData.name,
+          description: subcatData.description
+        });
+      }
+    }
+  }
+
+  // Fetch updated subcategories to return in response
+  const updatedSubcategories = await Subcategory.find({ category: req.params.id });
+
   res.status(200).json({
     success: true,
     category,
+    subcategories: updatedSubcategories
   });
 });
 
