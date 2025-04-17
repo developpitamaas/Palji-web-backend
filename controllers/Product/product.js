@@ -10,7 +10,7 @@ const ApiFeatures = require("../../utils/apifeature");
 
 const CreateProduct = Trycatch(async (req, res, next) => {
   const { price, discountPercentage, productSizes,productNuturitions } = req.body;
-  const { deliverables,Ingredient } = req.body;
+  const { deliverables } = req.body;
   
   let product;
   if (discountPercentage) {
@@ -49,12 +49,12 @@ const CreateProduct = Trycatch(async (req, res, next) => {
       include: deliverable,
     });
   }
-   for (let deliverable of Ingredient) {
-    await IngredientData.create({
-      productId: product._id,
-      ingredient: deliverable,
-    });
-  }
+  //  for (let deliverable of Ingredient) {
+  //   await IngredientData.create({
+  //     productId: product._id,
+  //     ingredient: deliverable,
+  //   });
+  // }
 
   res.status(201).json({
     success: true,

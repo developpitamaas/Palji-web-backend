@@ -56,6 +56,12 @@ const productSchema = new mongoose.Schema({
     type: String,
     default: "false",
   },
+  ingridents: {
+    type: String,
+  },
+  allergen:{
+    type: String,
+  }
 });
 
 productSchema.pre('save', function(next) {
