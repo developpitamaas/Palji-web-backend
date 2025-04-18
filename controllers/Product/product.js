@@ -49,12 +49,7 @@ const CreateProduct = Trycatch(async (req, res, next) => {
       include: deliverable,
     });
   }
-  //  for (let deliverable of Ingredient) {
-  //   await IngredientData.create({
-  //     productId: product._id,
-  //     ingredient: deliverable,
-  //   });
-  // }
+
 
   res.status(201).json({
     success: true,

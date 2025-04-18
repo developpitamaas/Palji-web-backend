@@ -2,6 +2,12 @@ const express = require("express");
 const User = express.Router();
 const Data = require("../controllers/User/userController");
 const auth = require("../middleware/Auth");
+const Insta = require("../controllers/instafeed");
+
+
+
+User.route("/instagram-feed").get(Insta.getInstagramFeed )
+
 
 // register
 User.route("/register-user").post(Data.RegisterUser)
