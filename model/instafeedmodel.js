@@ -5,7 +5,7 @@ const accessToken = 'EAAHHE4tDdh0BO6E9BCJdP4B0NUzdw7nqAxEw8I8L4FxzgRkf6ZCZCC48Af
 
 // Function to fetch Instagram data
 const fetchInstagramData = async () => {
-  const url = "https://graph.facebook.com/17841401994416697?fields=business_discovery.username(derbyindia){followers_count,media_count,biography,profile_picture_url,website,follows_count,ig_id,name,media.limit(50){caption,comments_count,like_count,save_count,media_url,media_type,timestamp,permalink,thumbnail_url,video_url,children}}&access_token=" + accessToken;    
+  const url = "https://graph.facebook.com/17841401994416697?fields=business_discovery.username(paljibakeryldh){followers_count,media_count,biography,profile_picture_url,website,follows_count,ig_id,name,media.limit(50){caption,comments_count,like_count,save_count,media_url,media_type,timestamp,permalink,thumbnail_url,video_url,children}}&access_token=" + accessToken;    
 
   try {
     // Fetch data from Instagram API
