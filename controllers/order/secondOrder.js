@@ -347,7 +347,7 @@ function generateOrderDetails(cart, secondorder, UserAdress) {
     ? `
       <div style="background-color: #f9f9f9; padding: 10px; border-radius: 8px;">
         <h3 style="color: ${textColor};">Coupon Code Applied:</h3>
-        <p style="color: #777;">${cart.coupancode} - Discount: ₹${cart.couponDiscount}</p>
+        <p style="color: #777;">${cart.coupancode} - Discount: ₹${cart.couapnDiscount}</p>
       </div>`
     : "";
 
