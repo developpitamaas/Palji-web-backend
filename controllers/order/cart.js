@@ -774,7 +774,7 @@ const incrementCakeQuantity = TryCatch(async (req, res) => {
   const processedOrderItems = await calculateTotalPriceWithCoupons(cart.orderItems);
   cart.orderItems = processedOrderItems;
   cart.totalPrice = processedOrderItems.reduce((total, item) => total + item.totalPrice, 0);
-  
+  cart.totalPriceWithoutDiscount = processedOrderItems.reduce((total, item) => total + item.WithOurDiscount, 0);
   await cart.save();
 
   res.status(200).json({ success: true, cart });
@@ -810,6 +810,7 @@ const decrementCakeQuantity = TryCatch(async (req, res) => {
     const processedOrderItems = await calculateTotalPriceWithCoupons(cart.orderItems);
     cart.orderItems = processedOrderItems;
     cart.totalPrice = processedOrderItems.reduce((total, item) => total + item.totalPrice, 0);
+    cart.totalPriceWithoutDiscount = processedOrderItems.reduce((total, item) => total + item.WithOurDiscount, 0);
   } else {
     cart.totalPrice = 0;
   }
