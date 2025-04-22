@@ -39,9 +39,6 @@ const addToCart = TryCatch(async (req, res, next) => {
       // If product exists, update the quantity
       cart.orderItems[existingItemIndex].quantity += quantity;
     } else {
-      console.log("cakemessage", cakemessage);
-
-      // If product doesn't exist, add it to the cart
       cart.orderItems.push({
         productId,
         quantity,
@@ -768,6 +765,8 @@ const incrementCakeQuantity = TryCatch(async (req, res) => {
   }
 
   existingItem.quantity += 1;
+
+
   await cart.save();
   
   // Recalculate prices
@@ -775,7 +774,20 @@ const incrementCakeQuantity = TryCatch(async (req, res) => {
   cart.orderItems = processedOrderItems;
   cart.totalPrice = processedOrderItems.reduce((total, item) => total + item.totalPrice, 0);
   cart.totalPriceWithoutDiscount = processedOrderItems.reduce((total, item) => total + item.WithOurDiscount, 0);
+
+  if (cart.coupancode) {
+    const coupon = await Coupon.findOne({ Coupancode: cart.coupancode });
+    if (coupon) {
+      const discount = (cart.totalPrice * coupon.discountPercentage) / 100;
+      cart.couapnDiscount = discount;
+      cart.totalPrice -= discount;
+    }
+  }
+
+
   await cart.save();
+
+  
 
   res.status(200).json({ success: true, cart });
 });
@@ -811,6 +823,15 @@ const decrementCakeQuantity = TryCatch(async (req, res) => {
     cart.orderItems = processedOrderItems;
     cart.totalPrice = processedOrderItems.reduce((total, item) => total + item.totalPrice, 0);
     cart.totalPriceWithoutDiscount = processedOrderItems.reduce((total, item) => total + item.WithOurDiscount, 0);
+
+    if (cart.coupancode) {
+      const coupon = await Coupon.findOne({ Coupancode: cart.coupancode });
+      if (coupon) {
+        const discount = (cart.totalPrice * coupon.discountPercentage) / 100;
+        cart.couapnDiscount = discount;
+        cart.totalPrice -= discount;
+      }
+    }
   } else {
     cart.totalPrice = 0;
   }
