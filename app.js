@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const User = require("./routes/user");
+const User = require("./routes/user"); 
 const Product = require("./routes/product");
 const Category = require("./routes/category");
 const Address = require("./routes/address");
@@ -9,7 +9,7 @@ const Admin = require("./routes/admin");
 const Coupan = require("./routes/Coupan");   
 const Wishlist = require("./routes/Wishlist");   
 const Message = require("./routes/usermessage");        
-const Subscribe = require("./routes/subscribe");
+const Subscribe = require("./routes/subscribe");   
 const Cart = require("./routes/cart");
 const Pincode = require("./routes/pincode");
 const SecondOrder = require("./routes/SecondOrder"); 
