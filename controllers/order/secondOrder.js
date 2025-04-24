@@ -552,7 +552,6 @@ function generateOrderDetails(cart, secondorder, UserAdress) {
 
         <div style="text-align: center; margin-top: 30px;">
           <p style="color: ${primaryColor};">Thank you for shopping with us!</p>
-          <a href="#" style="display: inline-block; background-color: ${primaryColor}; color: #fff; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Track Your Order</a>
         </div>
       </div>
     </body>
