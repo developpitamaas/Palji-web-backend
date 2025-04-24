@@ -56,6 +56,9 @@ const CreateSecondOrder = TryCatch(async (req, res, next) => {
     currency,
     paymentDoneAt,
     DeviceType,
+    taxableamount,
+    addedtax,
+    overalldiscount,
   } = req.body;
 
   // Create the second order
@@ -69,6 +72,9 @@ const CreateSecondOrder = TryCatch(async (req, res, next) => {
     currency: currency,
     paymentDoneAt,
     DeviceType,
+    taxableamount: taxableamount,
+    taxadded: addedtax,
+    finaldiscount: overalldiscount,
   });
 
   const userAddress = await ShipAddress.findById(secondorder.shippingAddress);
@@ -260,6 +266,9 @@ const CreateSecondOrderforselfDelivery = TryCatch(async (req, res, next) => {
     currency,
     paymentDoneAt,
     DeviceType,
+    taxableamount,
+    addedtax,
+    overalldiscount
   } = req.body;
 
   // Create the second order
@@ -274,6 +283,9 @@ const CreateSecondOrderforselfDelivery = TryCatch(async (req, res, next) => {
     currency: currency,
     paymentDoneAt,
     DeviceType,
+    taxableamount: taxableamount,
+    taxadded: addedtax,
+    finaldiscount: overalldiscount,
   });
 
   const userAddress = await ShipAddress.findById(secondorder.shippingAddress);
@@ -312,145 +324,22 @@ const CreateSecondOrderforselfDelivery = TryCatch(async (req, res, next) => {
   });
 });
 
-// function generateOrderDetails(cart, secondorder, UserAdress) {
-
-//    console.log("-=-=-=-==-=",cart, secondorder,)
-
-//   const logoUrl =
-//     "https://paliji-admin.vercel.app/static/media/logo.749613bd9100ee0b9f00.png";
-//   const shopName = "Palji Bakery";
-//   const primaryColor = "#d92587";
-//   const backgroundColor = "#f6f6f6";
-//   const textColor = "#333";
-//   const totalQuantity = cart.orderItems.reduce(
-//     (sum, item) => sum + item.quantity,
-//     0
-//   );
-//   const totalDiscount = cart.totalPriceWithoutDiscount - cart.totalPrice;
-
-//   let orderItemsHtml = cart.orderItems
-//     .map(
-//       (item) => `
-//         <div style="display: flex; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 20px;">
-//           <div style="flex: 1; text-align: center;">
-//             <img src="${item.productId.thumbnail}" alt="${item.productId.name}" style="max-width: 80px; border-radius: 8px;">
-//           </div>
-//           <div style="flex: 3; padding-left: 20px;">
-//             <h3 style="margin: 0; color: ${textColor};">${item.productId.name}</h3>
-//             <p style="margin: 5px 0; color: #777;">Quantity: ${item.quantity}</p>
-//             <p style="margin: 5px 0; color: #777;">Price: ₹${item.singleProductPrice}</p>
-//             <p style="margin: 5px 0; color: #777;">A delightful treat from Palji Bakery.</p>
-//           </div>
-//         </div>
-//       ` 
-//     )
-//     .join("");
-
-//   let couponHtml = cart.coupancode
-//     ? `
-//       <div style="background-color: #f9f9f9; padding: 10px; border-radius: 8px;">
-//         <h3 style="color: ${textColor};">Coupon Code Applied:</h3>
-//         <p style="color: #777;">${cart.coupancode} - Discount: ₹${cart.couapnDiscount}</p>
-//       </div>`
-//     : "";
-
-//   let totalHtml = `
-//     <div style="background-color: #f9f9f9; padding: 10px; border-radius: 8px;">
-//       <h3 style="color: ${textColor};">Order Summary</h3>
-//       <div>
-//         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; ">
-//           <div style="color: #777; width: 100%; ">Subtotal:</div>
-//           <div style="color: #777; width: 30%; ">₹${
-//             cart.totalPriceWithoutDiscount
-//           }</div>
-//         </div>
-
-//         ${
-//           totalDiscount > 0
-//             ? `<div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding: 0px 10px; width: 100%;">
-//                 <div style="color: #777; width: 100%; ">Total Discount:</div>
-//                 <div style="color: #777; width: 30%; ">₹${totalDiscount}</div>
-//               </div>`
-//             : ""
-//         }
-        
-//         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding: 0px 10px; width: 100%;  ">
-//           <div style="font-weight: bold; color: ${textColor}; width: 100%; ">Total:</div>
-//           <div style="font-weight: bold; color: ${textColor}; width: 30%; ">₹${
-//     cart.totalPrice
-//   }</div>
-//         </div>
-//       </div>
-//     </div>`;
-
-//   let shippingAddressHtml = `
-//     <div style="margin-top: 20px;">
-//       <h3 style="color: ${textColor};">Shipping Address</h3>
-//       <p style="color: #777;">${UserAdress.firstname} ${UserAdress.lastname}</p>
-// <p style="color: #777;">${UserAdress.address}</p>
-// <p style="color: #777;">${UserAdress.city} ${UserAdress.state}  </p>
-// <p style="color: #777;">${UserAdress.pincode}</p>
-
-//     </div>`;
-
-//   let paymentMethodHtml = `
-//     <div style="margin-top: 20px;">
-//       <h3 style="color: ${textColor};">Payment Method</h3>
-//       <p style="color: #777;">${secondorder.paymentMethod}</p>
-//     </div>`;
-
-//   let detailsHtml = `
-//     <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: ${backgroundColor};">
-//       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px;">
-//         <div style="text-align: center;">
-//           <img src="${logoUrl}" alt="${shopName}" style="max-width: 180px; margin-bottom: 15px;">
-//           <h1 style="color: ${primaryColor};">${shopName}</h1>
-//           <p style="color: #666;">Collection of Best Taste</p>
-//         </div>
-//         <hr style="border: none; height: 2px; background-color: ${primaryColor};">
-//         <h2 style="color: #666;">Order Confirmation</h2>
-//         <p>Thank you for your order! We're excited to bake some delicious treats for you.</p>
-        
-//         ${orderItemsHtml}
-        
-//         ${couponHtml}
-        
-//         ${totalHtml}
-
-//         ${shippingAddressHtml}
-
-//         ${paymentMethodHtml}
-
-//         <div style="text-align: center; margin-top: 30px;">
-//           <p style="color: ${primaryColor};">Thank you for shopping with us!</p>
-//           <a href="#" style="display: inline-block; background-color: ${primaryColor}; color: #fff; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Track Your Order</a>
-//         </div>
-//       </div>
-//     </body>
-//   `;
-
-//   return detailsHtml;
-// }
 function generateOrderDetails(cart, secondorder, UserAdress) {
   console.log("-=-=-=-==-=", cart, secondorder);
 
-  const logoUrl = "https://paliji-admin.vercel.app/static/media/logo.749613bd9100ee0b9f00.png";
+  const logoUrl =
+    "https://paliji-admin.vercel.app/static/media/logo.749613bd9100ee0b9f00.png";
   const shopName = "Palji Bakery";
   const primaryColor = "#d92587";
   const backgroundColor = "#f6f6f6";
   const textColor = "#333";
-  
-  // Calculate total quantity
-  const totalQuantity = cart.orderItems.reduce((sum, item) => sum + item.quantity, 0);
-  
-  // Calculate subtotal (sum of all items' totalPrice)
-  const subtotal = cart.orderItems.reduce((sum, item) => sum + item.totalPrice, 0);
-  
-  // Calculate total discount (difference between subtotal and final price before coupon)
-  const totalDiscount = subtotal - cart.totalPriceWithoutDiscount;
-  
-  // Get coupon discount
-  const couponDiscount = cart.couapnDiscount || 0;
+  const totalQuantity = cart.orderItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
+  const totalDiscount = (cart.totalPriceWithoutDiscount - cart.totalPrice) - cart.deliveryCharges;
+
+
 
   let orderItemsHtml = cart.orderItems
     .map(
@@ -463,7 +352,6 @@ function generateOrderDetails(cart, secondorder, UserAdress) {
             <h3 style="margin: 0; color: ${textColor};">${item.productId.name}</h3>
             <p style="margin: 5px 0; color: #777;">Quantity: ${item.quantity}</p>
             <p style="margin: 5px 0; color: #777;">Price: ₹${item.singleProductPrice}</p>
-            <p style="margin: 5px 0; color: #777;">Total: ₹${item.totalPrice}</p>
             <p style="margin: 5px 0; color: #777;">A delightful treat from Palji Bakery.</p>
           </div>
         </div>
@@ -475,7 +363,7 @@ function generateOrderDetails(cart, secondorder, UserAdress) {
     ? `
       <div style="background-color: #f9f9f9; padding: 10px; border-radius: 8px;">
         <h3 style="color: ${textColor};">Coupon Code Applied:</h3>
-        <p style="color: #777;">${cart.coupancode} - Discount: ₹${couponDiscount}</p>
+        <p style="color: #777;">${cart.coupancode} - Discount: ₹${cart.couapnDiscount}</p>
       </div>`
     : "";
 
@@ -484,31 +372,37 @@ function generateOrderDetails(cart, secondorder, UserAdress) {
       <h3 style="color: ${textColor};">Order Summary</h3>
       <div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; ">
-          <div style="color: #777; width: 100%; ">Subtotal (${totalQuantity} items):</div>
-          <div style="color: #777; width: 30%; ">₹${subtotal.toFixed(2)}</div>
+          <div style="color: #777; width: 100%; ">Subtotal:</div>
+          <div style="color: #777; width: 30%; ">₹${
+            cart.totalPriceWithoutDiscount
+          }</div>
         </div>
-
-        ${
-          totalDiscount > 0
-            ? `<div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding: 0px 10px; width: 100%;">
-                <div style="color: #777; width: 100%; ">Discount:</div>
-                <div style="color: #777; width: 30%; ">-₹${Math.abs(totalDiscount).toFixed(2)}</div>
-              </div>`
-            : ""
-        }
         
-        ${
-          couponDiscount > 0
-            ? `<div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding: 0px 10px; width: 100%;">
-                <div style="color: #777; width: 100%; ">Coupon Discount (${cart.coupancode}):</div>
-                <div style="color: #777; width: 30%; ">-₹${couponDiscount.toFixed(2)}</div>
-              </div>`
-            : ""
-        }
+         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; ">
+           <div style="color: #777; width: 100%; ">Taxable Amount:</div>
+           <div style="color: #777; width: 30%; ">₹${parseFloat(secondorder.taxableamount).toFixed(2)}</div>
+         </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; ">
+          <div style="color: #777; width: 100%; ">Tax added:</div>
+          <div style="color: #777; width: 30%; ">₹${parseFloat(secondorder.taxadded).toFixed(2)}</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; ">
+          <div style="color: #777; width: 100%; ">Shipping Charges:</div>
+          <div style="color: #777; width: 30%; ">₹${parseFloat(cart.deliveryCharges).toFixed(2)}</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding: 0px 10px; width: 100%;">
+                <div style="color: #777; width: 100%; ">Total Discount:</div>
+                <div style="color: #777; width: 30%; ">₹${secondorder.finaldiscount}</div>
+              </div>
+
+      
         
         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding: 0px 10px; width: 100%;  ">
           <div style="font-weight: bold; color: ${textColor}; width: 100%; ">Total:</div>
-          <div style="font-weight: bold; color: ${textColor}; width: 30%; ">₹${cart.totalPrice.toFixed(2)}</div>
+          <div style="font-weight: bold; color: ${textColor}; width: 30%; ">₹${
+    cart.totalPrice
+  }</div>
         </div>
       </div>
     </div>`;
@@ -517,9 +411,10 @@ function generateOrderDetails(cart, secondorder, UserAdress) {
     <div style="margin-top: 20px;">
       <h3 style="color: ${textColor};">Shipping Address</h3>
       <p style="color: #777;">${UserAdress.firstname} ${UserAdress.lastname}</p>
-      <p style="color: #777;">${UserAdress.address}</p>
-      <p style="color: #777;">${UserAdress.city} ${UserAdress.state}</p>
-      <p style="color: #777;">${UserAdress.pincode}</p>
+<p style="color: #777;">${UserAdress.address}</p>
+<p style="color: #777;">${UserAdress.city} ${UserAdress.state}  </p>
+<p style="color: #777;">${UserAdress.pincode}</p>
+
     </div>`;
 
   let paymentMethodHtml = `
@@ -559,6 +454,207 @@ function generateOrderDetails(cart, secondorder, UserAdress) {
 
   return detailsHtml;
 }
+// function generateOrderDetails(cart, secondorder, UserAdress) {
+//   console.log("-=-=-=-==-=", cart, secondorder);
+
+//   const logoUrl = "https://paliji-admin.vercel.app/static/media/logo.749613bd9100ee0b9f00.png";
+//   const shopName = "Palji Bakery";
+//   const primaryColor = "#d92587";
+//   const backgroundColor = "#f6f6f6";
+//   const textColor = "#333";
+
+//   // Calculate total quantity
+//   const totalQuantity = cart.orderItems.reduce((sum, item) => sum + item.quantity, 0);
+
+//   // Calculate tax details
+//   let totalGstAmount = 0;
+//   let totalAmountNoGST = 0;
+//   let totalDiscountedBase = 0;
+//   let totalMRP = 0;
+
+//   // Calculate MRP (sum of all product prices before any discounts)
+//   cart.orderItems.forEach(item => {
+//     const itemMRP = item.productId?.price || item.singleProductPrice;
+//     totalMRP += itemMRP * item.quantity;
+//   });
+
+//   // Without coupon calculation
+//   if (!cart.couapnDiscount) {
+//     cart.orderItems.forEach(item => {
+//       const finalPrice = item.size?.FinalPrice || item.singleProductPrice || 0;
+//       // Using 12% GST as per your useEffect hook
+//       const gstPercentage = 12;
+//       const basePrice = finalPrice / (1 + gstPercentage / 100);
+
+//       totalAmountNoGST += basePrice * item.quantity;
+//       totalGstAmount += (finalPrice - basePrice) * item.quantity;
+//     });
+//   }
+//   // With coupon calculation
+//   else {
+//     const totalDiscount = cart.couapnDiscount;
+//     const originalTotal = cart.totalPriceWithoutDiscount;
+
+//     cart.orderItems.forEach(item => {
+//       const finalPrice = item.size?.FinalPrice || item.singleProductPrice || 0;
+//       // Using 12% GST as per your useEffect hook
+//       const gstPercentage = 12;
+
+//       // Calculate base price after item discount
+//       const itemBasePrice = finalPrice / (1 + gstPercentage / 100);
+
+//       // Calculate coupon discount proportion
+//       const itemShare = (finalPrice * item.quantity) / originalTotal;
+//       const itemDiscount = totalDiscount * itemShare;
+
+//       // Apply coupon discount to base price PER UNIT
+//       const discountedBasePerUnit = itemBasePrice - (itemDiscount / (1 + gstPercentage / 100)) / item.quantity;
+
+//       totalDiscountedBase += discountedBasePerUnit * item.quantity;
+//       totalGstAmount += discountedBasePerUnit * (gstPercentage / 100) * item.quantity;
+//     });
+
+//     totalAmountNoGST = totalDiscountedBase;
+//   }
+
+//   // Calculate discount (difference between MRP and selling price before tax)
+//   const totalDiscountMRP = totalMRP - cart.totalPriceWithoutDiscount;
+//   // Get coupon discount
+//   const couponDiscount = cart.couapnDiscount || 0;
+
+//   let orderItemsHtml = cart.orderItems
+//     .map(
+//       (item) => {
+//         const finalPrice = item.size?.FinalPrice || item.singleProductPrice || 0;
+//         // Using 12% GST as per your useEffect hook
+//         const taxRate = 12;
+//         const basePrice = finalPrice / (1 + taxRate / 100);
+//         const gstAmount = finalPrice - basePrice;
+//         const itemMRP = item.productId?.price || item.singleProductPrice;
+
+//         return `
+//         <div style="display: flex; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 20px;">
+//           <div style="flex: 1; text-align: center;">
+//             <img src="${item.productId.thumbnail}" alt="${item.productId.name}" style="max-width: 80px; border-radius: 8px;">
+//           </div>
+//           <div style="flex: 3; padding-left: 20px;">
+//             <h3 style="margin: 0; color: ${textColor};">${item.productId.name}</h3>
+//             <p style="margin: 5px 0; color: #777;">Quantity: ${item.quantity}</p>
+//             <p style="margin: 5px 0; color: #777;">MRP: ₹${itemMRP.toFixed(2)}</p>
+//             <p style="margin: 5px 0; color: #777;">Selling Price: ₹${finalPrice.toFixed(2)}</p>
+//             // <p style="margin: 5px 0; color: #777;">Tax added: ₹${(cart.taxadded).toFixed(2)}</p>
+//             <p style="margin: 5px 0; color: #777;">Total: ₹${(finalPrice * item.quantity).toFixed(2)}</p>
+//           </div>
+//         </div>
+//       `;
+//       }
+//     )
+//     .join("");
+
+//   let couponHtml = cart.coupancode
+//     ? `
+//       <div style="background-color: #f9f9f9; padding: 10px; border-radius: 8px;">
+//         <h3 style="color: ${textColor};">Coupon Code Applied:</h3>
+//         <p style="color: #777;">${cart.coupancode} - Discount: ₹${couponDiscount.toFixed(2)}</p>
+//       </div>`
+//     : "";
+
+//   let totalHtml = `
+//     <div style="background-color: #f9f9f9; padding: 10px; border-radius: 8px;">
+//       <h3 style="color: ${textColor};">Order Summary</h3>
+//       <div>
+//         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; ">
+//           <div style="color: #777; width: 100%; ">MRP:</div>
+//           <div style="color: #777; width: 30%; ">₹${totalMRP.toFixed(2)}</div>
+//         </div>
+
+//         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; ">
+//           <div style="color: #777; width: 100%; ">Discount:</div>
+//           <div style="color: #777; width: 30%; ">-₹${totalDiscountMRP.toFixed(2)}</div>
+//         </div>
+
+//         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; ">
+//           <div style="color: #777; width: 100%; ">Selling Price:</div>
+//           <div style="color: #777; width: 30%; ">₹${cart.totalPriceWithoutDiscount.toFixed(2)}</div>
+//         </div>
+
+//         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; ">
+//           <div style="color: #777; width: 100%; ">Taxable Amount vaibbhav:</div>
+//           <div style="color: #777; width: 30%; ">₹${parseFloat(cart.taxableamount).toFixed(2)}</div>
+//         </div>
+
+//         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; ">
+//           <div style="color: #777; width: 100%; ">Tax added vaibbhav:</div>
+//           <div style="color: #777; width: 30%; ">₹${parseFloat(totalGstAmount).toFixed(2)}</div>
+//         </div>
+
+//         ${
+//           couponDiscount > 0
+//             ? `<div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding: 0px 10px; width: 100%;">
+//                 <div style="color: #777; width: 100%; ">Coupon Discount (${cart.coupancode}):</div>
+//                 <div style="color: #777; width: 30%; ">-₹${couponDiscount.toFixed(2)}</div>
+//               </div>`
+//             : ""
+//         }
+
+//         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; ">
+//           <div style="color: #777; width: 100%; ">Delivery Fee:</div>
+//           <div style="color: #777; width: 30%; ">₹${cart.deliveryCharges.toFixed(2)}</div>
+//         </div>
+
+//         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; border-top: 1px solid #ddd; padding-top: 10px;">
+//           <div style="font-weight: bold; color: ${textColor}; width: 100%; ">Order Total:</div>
+//           <div style="font-weight: bold; color: ${textColor}; width: 30%; ">₹${cart.totalPrice.toFixed(2)}</div>
+//         </div>
+//       </div>
+//     </div>`;
+
+//   let shippingAddressHtml = `
+//     <div style="margin-top: 20px;">
+//       <h3 style="color: ${textColor};">Shipping Address</h3>
+//       <p style="color: #777;">${UserAdress.firstname} ${UserAdress.lastname}</p>
+//       <p style="color: #777;">${UserAdress.address}</p>
+//       <p style="color: #777;">${UserAdress.city} ${UserAdress.state}</p>
+//       <p style="color: #777;">${UserAdress.pincode}</p>
+//     </div>`;
+
+//   let paymentMethodHtml = `
+//     <div style="margin-top: 20px;">
+//       <h3 style="color: ${textColor};">Payment Method</h3>
+//       <p style="color: #777;">${secondorder.paymentMethod}</p>
+//     </div>`;
+
+//   let detailsHtml = `
+//     <body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: ${backgroundColor};">
+//       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px;">
+//         <div style="text-align: center;">
+//           <img src="${logoUrl}" alt="${shopName}" style="max-width: 180px; margin-bottom: 15px;">
+//           <h1 style="color: ${primaryColor};">${shopName}</h1>
+//           <p style="color: #666;">Collection of Best Taste</p>
+//         </div>
+//         <hr style="border: none; height: 2px; background-color: ${primaryColor};">
+//         <h2 style="color: #666;">Order Confirmation</h2>
+//         <p>Thank you for your order! We're excited to bake some delicious treats for you.</p>
+
+//         ${orderItemsHtml}
+
+//         ${couponHtml}
+
+//         ${totalHtml}
+
+//         ${shippingAddressHtml}
+
+//         ${paymentMethodHtml}
+
+//         <div style="text-align: center; margin-top: 30px;">
+//           <p style="color: ${primaryColor};">Thank you for shopping with us!</p>
+//         </div>
+//       </div>
+//     </body>
+//   `;
+
+//   return detailsHtml;
+// }
 
 function calculateOrderTotal(cart) {
   return cart.orderItems.reduce(
@@ -610,7 +706,6 @@ const GetMySecondOrder = TryCatch(async (req, res, next) => {
 // get second order by id
 // const GetSecondOrderById = TryCatch(async (req, res, next) => {
 
-
 //   const secondorder = await SecondorderSchema.findById(req.params.id)
 //     .populate("CartId")
 //     .populate({
@@ -631,7 +726,6 @@ const GetMySecondOrder = TryCatch(async (req, res, next) => {
 //     .populate("billingAddress")
 //     .populate("userId");
 
-
 //   res.status(200).json({
 //     success: true,
 //     message: "Order fetched successfully vaibhaknknknknk",
@@ -640,7 +734,6 @@ const GetMySecondOrder = TryCatch(async (req, res, next) => {
 // });
 
 const GetSecondOrderById = TryCatch(async (req, res, next) => {
-
   const secondorder = await SecondorderSchema.findById(req.params.id)
     .populate("CartId")
     .populate({
@@ -651,8 +744,8 @@ const GetSecondOrderById = TryCatch(async (req, res, next) => {
         populate: {
           path: "category", // Populate the category field in productId
           model: "category", // Assuming the model for categories is named "category"
-        }
-      }
+        },
+      },
     })
     .populate({
       path: "CartId",
@@ -671,7 +764,6 @@ const GetSecondOrderById = TryCatch(async (req, res, next) => {
     secondorder,
   });
 });
-
 
 const GetSecondOrderByShiprocketId = TryCatch(async (req, res, next) => {
   const secondorder = await SecondorderSchema.findOne({
@@ -776,7 +868,7 @@ module.exports = {
   UpdateSecondOrder,
   GetSecondOrderByShiprocketId,
   getUserDetailsById,
-  CreateSecondOrderforselfDelivery
+  CreateSecondOrderforselfDelivery,
   // CreateRazorpayOrder: RazorpayData.CreateRazorpayOrder,
   // Getpaymentdetailsbyorderid: RazorpayData.Getpaymentdetailsbyorderid,
 };

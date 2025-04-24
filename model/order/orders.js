@@ -125,7 +125,16 @@ const SecondorderSchema = new mongoose.Schema(
     taxprice: {
       type: String,
     },
-    // Other Information
+    finaldiscount: {
+      type: String,
+    },
+
+    taxableamount: {
+      type: String,
+    },
+    taxadded: {
+      type: String,
+    },
     trackingNumber: {
       type: String,
     },
