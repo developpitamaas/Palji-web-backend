@@ -171,7 +171,6 @@ const CreateSecondOrder = TryCatch(async (req, res, next) => {
       totalWeight += convertToKg(itemWeight, sizeType) * item.quantity;
     });
 
-    console.log("Total Weight Calculated:", totalWeight);
     return totalWeight;
   };
 
@@ -195,18 +194,18 @@ const CreateSecondOrder = TryCatch(async (req, res, next) => {
     billing_country: userAddress.country,
     billing_phone: userAddress.phonenumber,
     shipping_is_billing: true,
-    shipping_customer_name: req.user.firstName,
-    shipping_last_name: req.user.lastName,
+    shipping_customer_name: userAddress.firstName,
+    shipping_last_name: userAddress.lastName,
     shipping_address: userAddress.address,
     shipping_city: userAddress.city,
     shipping_pincode: userAddress.pincode,
     shipping_state: userAddress.state,
-    shipping_country: userAddress.country,
+    shipping_country: userAddress.country, 
     transaction_id: secondorder.paymentId,
     shipping_phone: userAddress.phonenumber,
     order_items: cart.orderItems.map((item, index) => ({
       sku: `SKU_${item.productId._id}_${index}`,
-      name: item.productId.name,
+      name: item.productId.name, 
       category: item.productId.category.toString(),
       units: item.quantity,
       selling_price: item.singleProductPrice,
@@ -229,7 +228,6 @@ const CreateSecondOrder = TryCatch(async (req, res, next) => {
     weight: totalWeight, // Ensure this is a valid number
   };
 
-  console.log("shiprocketPayload", shiprocketPayload);
 
   // Send payload to Shiprocket
   const shiprocketResponse = await ShiprocketData.createShiprocketOrder(
