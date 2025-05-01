@@ -9,7 +9,10 @@ const Trycatch = require("../../middleware/Trycatch");
 const ApiFeatures = require("../../utils/apifeature");
 
 const CreateProduct = Trycatch(async (req, res, next) => {
-  const { price, discountPercentage, productSizes,productNuturitions } = req.body;
+  const { price, discountPercentage, productSizes,productNuturitions,
+    careInstructions, 
+    deliveryInformation 
+   } = req.body;
   const { deliverables } = req.body;
   
   let product;
@@ -18,6 +21,8 @@ const CreateProduct = Trycatch(async (req, res, next) => {
     product = await Product.create({
       ...req.body,
       PriceAfterDiscount: discountedPrice,
+      careInstructions,
+    deliveryInformation,
     });
   } else {
     product = await Product.create(req.body);
@@ -64,7 +69,7 @@ const CreateProduct = Trycatch(async (req, res, next) => {
 //       products.map(async (product) => {
 //         const size = await ProductSize.find({ productId: product._id });
 //         return { ...product._doc, size }; 
-//       })
+//       }) 
 //     );
 //     const totalProducts = products.length;
 //   res.status(200).json({
