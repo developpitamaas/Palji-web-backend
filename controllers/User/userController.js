@@ -75,13 +75,10 @@ const RegisterUser = Trycatch(async (req, res, next) => {
 
 const Registeruserwithpassword = Trycatch(async (req, res, next) => {
     // find user by email 
-    console.log("---333--------------");
 
     const useremail = await User.findOne({ email: req.body.email });
-    console.log("---333",useremail);
 
     if (useremail) {
-      console.log("---11",useremail);
       return res.status(400).json({
         success: false,
         message: "User already exists",
@@ -372,10 +369,10 @@ const ForgotPassword = Trycatch(async (req, res, next) => {
   </div>
 `;
 
-
-  // Send OTP
+  
+  // Send OTP 
   try {
-    await Mail(email, "Password Reset OTP", emailContent, true);
+    await Mail(email, "Password Reset OTP", `${emailContent}`, (isHTML = true));
     res.status(200).json({
       success: true,
       message: "OTP sent to your email",
