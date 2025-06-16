@@ -1,12 +1,16 @@
 const axios = require("axios");
 const SecondorderSchema = require("../../../model/order/orders");
+const { checkAndUpdateToken } = require("../../../utils/tokenUtils");
 
 // create order on Shiprocket
 const createShiprocketOrder = async (orderData) => {
+const token =   await checkAndUpdateToken();
+
   const url = "https://apiv2.shiprocket.in/v1/external/orders/create/adhoc";
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+    Authorization: `Bearer ${token.token}`,
+    // Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
   };
   try {
   
@@ -52,12 +56,14 @@ const createShiprocketOrder = async (orderData) => {
 // };
 
 const getAllOrders = async (req, res) => {
+const token =   await checkAndUpdateToken();
 
   const status = req.query.status;
   const url = "https://apiv2.shiprocket.in/v1/external/orders";
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+    // Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+    Authorization: `Bearer ${token.token}`,
   };
 
   try {
@@ -87,11 +93,15 @@ const getAllOrders = async (req, res) => {
 
 
 const getOrderById = async (req, res) => {
+
+const token =   await checkAndUpdateToken();
+
   const orderId = req.params.id;
   const url = `https://apiv2.shiprocket.in/v1/external/orders/show/${orderId}`;
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+    // Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+    Authorization: `Bearer ${token.token}`,
   };
   try {
     const response = await axios.get(url, { headers });
@@ -115,6 +125,8 @@ const getOrderById = async (req, res) => {
 
 const cancelOrderById = async (req, res) => { 
   const orderId = req.params.id;  // Get the order ID from the request parameters
+  const token =   await checkAndUpdateToken();
+
 
   if (!orderId) {
     return res.status(400).json({
@@ -126,7 +138,8 @@ const cancelOrderById = async (req, res) => {
   const url = 'https://apiv2.shiprocket.in/v1/external/orders/cancel';
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+    // Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+    Authorization: `Bearer ${token.token}`,
   };
 
   // Format the body with the order IDs (as an array)
@@ -160,11 +173,14 @@ const cancelOrderById = async (req, res) => {
 
 
 const getOrdersByUserId = async (req, res) => {
+const token =   await checkAndUpdateToken();
+
   const userId = req.user.id; // Assuming userId is extracted from authenticated request
   const url = "https://apiv2.shiprocket.in/v1/external/orders";
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+    Authorization: `Bearer ${token.token}`,
+    // Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
   };
   try {
     const response = await axios.get(url, { headers });
@@ -263,6 +279,8 @@ const getOrdersByUserId = async (req, res) => {
 // };
 
 const checkServiceability = async (req, res) => {
+const token =   await checkAndUpdateToken();
+
   // Extract parameters from the query string
   const { pickup_postcode, delivery_postcode, weight, cod, order_id } = req.query; 
 
@@ -277,7 +295,8 @@ const checkServiceability = async (req, res) => {
   const serviceabilityUrl = "https://apiv2.shiprocket.in/v1/external/courier/serviceability";
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+    // Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+    Authorization: `Bearer ${token.token}`,
   };
 
   // Parameters to be sent to ShipRocket API
@@ -315,6 +334,7 @@ const checkServiceability = async (req, res) => {
 const createShipment = async (req, res) => {
   const orderId = req.params.id;
   const courierId = req.params.courierId;
+const token =   await checkAndUpdateToken();
 
   if (!orderId) {
     return res.status(400).json({
@@ -326,7 +346,9 @@ const createShipment = async (req, res) => {
   const orderDetailsUrl = `https://apiv2.shiprocket.in/v1/external/orders/show/${orderId}`;
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+    // Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+
+    Authorization: `Bearer ${token.token}`,
   };
 
   try {

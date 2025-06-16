@@ -11,6 +11,7 @@ const RazorpayData = require("../order/razorpay/razorpayController");
 const User = require("../../model/User/users");
 const Trycatch = require("../../middleware/Trycatch");
 
+
 // get user all details by id
 const getUserDetailsById = Trycatch(async (req, res, next) => {
   const user = await User.findById(req.params.id);
@@ -200,12 +201,12 @@ const CreateSecondOrder = TryCatch(async (req, res, next) => {
     shipping_city: userAddress.city,
     shipping_pincode: userAddress.pincode,
     shipping_state: userAddress.state,
-    shipping_country: userAddress.country, 
+    shipping_country: userAddress.country,
     transaction_id: secondorder.paymentId,
     shipping_phone: userAddress.phonenumber,
     order_items: cart.orderItems.map((item, index) => ({
       sku: `SKU_${item.productId._id}_${index}`,
-      name: item.productId.name, 
+      name: item.productId.name,
       category: item.productId.category.toString(),
       units: item.quantity,
       selling_price: item.singleProductPrice,
@@ -227,7 +228,6 @@ const CreateSecondOrder = TryCatch(async (req, res, next) => {
     height: totalHeight,
     weight: totalWeight, // Ensure this is a valid number
   };
-
 
   // Send payload to Shiprocket
   const shiprocketResponse = await ShiprocketData.createShiprocketOrder(
@@ -266,7 +266,7 @@ const CreateSecondOrderforselfDelivery = TryCatch(async (req, res, next) => {
     DeviceType,
     taxableamount,
     addedtax,
-    overalldiscount
+    overalldiscount,
   } = req.body;
 
   // Create the second order
@@ -335,9 +335,8 @@ function generateOrderDetails(cart, secondorder, UserAdress) {
     (sum, item) => sum + item.quantity,
     0
   );
-  const totalDiscount = (cart.totalPriceWithoutDiscount - cart.totalPrice) - cart.deliveryCharges;
-
-
+  const totalDiscount =
+    cart.totalPriceWithoutDiscount - cart.totalPrice - cart.deliveryCharges;
 
   let orderItemsHtml = cart.orderItems
     .map(
@@ -378,20 +377,28 @@ function generateOrderDetails(cart, secondorder, UserAdress) {
         
          <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; ">
            <div style="color: #777; width: 100%; ">Taxable Amount:</div>
-           <div style="color: #777; width: 30%; ">₹${parseFloat(secondorder.taxableamount).toFixed(2)}</div>
+           <div style="color: #777; width: 30%; ">₹${parseFloat(
+             secondorder.taxableamount
+           ).toFixed(2)}</div>
          </div>
 
         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; ">
           <div style="color: #777; width: 100%; ">Tax added:</div>
-          <div style="color: #777; width: 30%; ">₹${parseFloat(secondorder.taxadded).toFixed(2)}</div>
+          <div style="color: #777; width: 30%; ">₹${parseFloat(
+            secondorder.taxadded
+          ).toFixed(2)}</div>
         </div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding:0px 10px; width: 100%; ">
           <div style="color: #777; width: 100%; ">Shipping Charges:</div>
-          <div style="color: #777; width: 30%; ">₹${parseFloat(cart.deliveryCharges).toFixed(2)}</div>
+          <div style="color: #777; width: 30%; ">₹${parseFloat(
+            cart.deliveryCharges
+          ).toFixed(2)}</div>
         </div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; padding: 0px 10px; width: 100%;">
                 <div style="color: #777; width: 100%; ">Total Discount:</div>
-                <div style="color: #777; width: 30%; ">₹${secondorder.finaldiscount}</div>
+                <div style="color: #777; width: 30%; ">₹${
+                  secondorder.finaldiscount
+                }</div>
               </div>
 
       

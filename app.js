@@ -15,6 +15,9 @@ const Pincode = require("./routes/pincode");
 const SecondOrder = require("./routes/SecondOrder"); 
 const cookieParser = require("cookie-parser");
 const axios = require("axios");
+const { checkAndUpdateToken } = require("./utils/tokenUtils");
+const cron = require('node-cron');
+
 
 // auth
 // const session = require("express-session");
@@ -62,6 +65,26 @@ app.use(
   SecondOrder,
   // authRoutes
 );
+
+
+cron.schedule('0 */6 * * *', async () => {
+    console.log('Running scheduled token check...');
+    try {
+        await checkAndUpdateToken();
+        console.log('Token check completed successfully');
+    } catch (error) {
+        console.error('Error during scheduled token check:', error.message);
+    }
+});
+
+
+// Also check token immediately when server starts
+checkAndUpdateToken().then(() => {
+    console.log('Initial token check completed');
+}).catch(error => {
+    console.error('Error during initial token check:', error.message);
+});
+
   
 // default route
 app.get("/", (req, res) => {

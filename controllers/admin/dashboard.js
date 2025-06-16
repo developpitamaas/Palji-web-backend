@@ -3,6 +3,7 @@ const TryCatch = require("../../middleware/Trycatch");
 const Products = require("../../model/Product/product");
 const SecondorderSchema = require("../../model/order/orders");
 const axios = require("axios");
+const {checkAndUpdateToken} = require("../../utils/tokenUtils");
 
 // get dashboard 
 // const GetDashboard = TryCatch(async (req, res, next) => {
@@ -44,6 +45,8 @@ const axios = require("axios");
 //   });
 // });     
 const GetDashboard = TryCatch(async (req, res, next) => {
+  const token =   await checkAndUpdateToken();
+
   // Fetch data from your database
   const totalUsers = await User.countDocuments();
   const totalProducts = await Products.countDocuments();
@@ -68,7 +71,8 @@ const GetDashboard = TryCatch(async (req, res, next) => {
   const shiprocketUrl = "https://apiv2.shiprocket.in/v1/external/orders";
   const shiprocketHeaders = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
+    Authorization: `Bearer ${token.token}`,
+    // Authorization: `Bearer ${process.env.SHIPROCKET_TOKEN}`,
   };
 
   let shiprocketNewOrders = 0;
